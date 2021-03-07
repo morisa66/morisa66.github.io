@@ -3,7 +3,16 @@
     ScrollReveal().reveal(target);
   })
 });
-</script><link id="light-prism-css" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@latest/themes/prism.css" media="(prefers-color-scheme: light)"><link id="dark-prism-css" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@latest/themes/prism-tomorrow.css" media="(prefers-color-scheme: dark)"><link rel="shortcut icon" type="image/svg+xml" href="/yun.svg"><link rel="mask-icon" href="/yun.svg" color="#0078E7"><link rel="alternate icon" href="/yun.ico"><link rel="preload" href="/css/hexo-theme-yun.css" as="style"><link rel="preload" href="/js/utils.js" as="script"><link rel="preload" href="/js/hexo-theme-yun.js" as="script"><link rel="prefetch" href="/js/sidebar.js" as="script"><link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin><script id="yun-config">
+</script><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.css"><script defer src="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.js"></script><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/katex@latest/dist/contrib/copy-tex.min.css"><script defer src="https://cdn.jsdelivr.net/npm/katex@latest/dist/contrib/copy-tex.min.js"></script><script defer src="https://cdn.jsdelivr.net/npm/katex@latest/dist/contrib/auto-render.min.js"></script><script>document.addEventListener("DOMContentLoaded", function() {
+  renderMathInElement(document.body, {
+    delimiters: [
+      {left: "$$", right: "$$", display: true},
+      {left: "$", right: "$", display: false},
+      {left: "\\(", right: "\\)", display: false},
+      {left: "\\[", right: "\\]", display: true}
+    ]
+  });
+});</script><link id="light-prism-css" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@latest/themes/prism.css" media="(prefers-color-scheme: light)"><link id="dark-prism-css" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@latest/themes/prism-tomorrow.css" media="(prefers-color-scheme: dark)"><link rel="shortcut icon" type="image/svg+xml" href="/yun.svg"><link rel="mask-icon" href="/yun.svg" color="#0078E7"><link rel="alternate icon" href="/yun.ico"><link rel="preload" href="/css/hexo-theme-yun.css" as="style"><link rel="preload" href="/js/utils.js" as="script"><link rel="preload" href="/js/hexo-theme-yun.js" as="script"><link rel="prefetch" href="/js/sidebar.js" as="script"><link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin><script id="yun-config">
     const Yun = window.Yun || {};
     window.CONFIG = {"hostname":"morisa66.github.io","root":"/","title":"难为君子|不做小人","version":"1.5.1","mode":"auto","copycode":true,"page":{"isPost":true},"i18n":{"placeholder":"搜索...","empty":"找不到您查询的内容: ${query}","hits":"找到 ${hits} 条结果","hits_time":"找到 ${hits} 条结果（用时 ${time} 毫秒）"},"anonymous_image":"https://cdn.jsdelivr.net/gh/YunYouJun/cdn/img/avatar/none.jpg","say":{"api":"https://v1.hitokoto.cn","hitokoto":true},"fireworks":{"colors":["102, 167, 221","62, 131, 225","33, 78, 194"]}};
   </script><link rel="stylesheet" href="/css/hexo-theme-yun.css"><script src="/js/utils.js"></script><script src="/js/hexo-theme-yun.js"></script><meta name="description" content="背包问题 01背包 \(N\)件物品，背包容量\(V\)，第\(i\)件消耗\(C_i\)，得到\(W_i\)，求\(\mathbb{MAX}(\sum W)\)。 每种物品仅有一件，选择放或不放。 \(F[i, v]\) 表示前\(i\)件物品恰放入容量\(v\)的背包可获得最大价值。 \[ F[i,v]&#x3D;\mathbb{MAX}\{F[i-1,v],F[i-1,v-C_i]+W_i\">
