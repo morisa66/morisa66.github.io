@@ -1,0 +1,748 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="theme-color" content="#0078E7"><meta name="author" content="morisa"><meta name="copyright" content="morisa"><meta name="generator" content="Hexo 5.4.0"><meta name="theme" content="hexo-theme-yun"><title>OpenGL 1 | Little Web</title><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@900&amp;display=swap" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/star-markdown-css@0.1.24/dist/yun/yun-markdown.min.css"><script src="//at.alicdn.com/t/font_1140697_ed8vp4atwoj.js" async></script><script src="https://cdn.jsdelivr.net/npm/scrollreveal/dist/scrollreveal.min.js" defer></script><script>document.addEventListener("DOMContentLoaded", () => {
+  [".post-card",".post-content img"].forEach((target)=> {
+    ScrollReveal().reveal(target);
+  })
+});
+</script><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.css"><script defer src="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.js"></script><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/katex@latest/dist/contrib/copy-tex.min.css"><script defer src="https://cdn.jsdelivr.net/npm/katex@latest/dist/contrib/copy-tex.min.js"></script><script defer src="https://cdn.jsdelivr.net/npm/katex@latest/dist/contrib/auto-render.min.js"></script><script>document.addEventListener("DOMContentLoaded", function() {
+  renderMathInElement(document.body, {
+    delimiters: [
+      {left: "$$", right: "$$", display: true},
+      {left: "$", right: "$", display: false},
+      {left: "\\(", right: "\\)", display: false},
+      {left: "\\[", right: "\\]", display: true}
+    ]
+  });
+});</script><link id="light-prism-css" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@latest/themes/prism.css" media="(prefers-color-scheme: light)"><link id="dark-prism-css" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@latest/themes/prism-tomorrow.css" media="(prefers-color-scheme: dark)"><link rel="shortcut icon" type="image/svg+xml" href="/yun.svg"><link rel="mask-icon" href="/yun.svg" color="#0078E7"><link rel="alternate icon" href="/yun.ico"><link rel="preload" href="/css/hexo-theme-yun.css" as="style"><link rel="preload" href="/js/utils.js" as="script"><link rel="preload" href="/js/hexo-theme-yun.js" as="script"><link rel="prefetch" href="/js/sidebar.js" as="script"><link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin><script id="yun-config">
+    const Yun = window.Yun || {};
+    window.CONFIG = {"hostname":"morisa66.github.io","root":"/","title":"难为君子|不做小人","version":"1.5.1","mode":"auto","copycode":true,"page":{"isPost":true},"i18n":{"placeholder":"搜索...","empty":"找不到您查询的内容: ${query}","hits":"找到 ${hits} 条结果","hits_time":"找到 ${hits} 条结果（用时 ${time} 毫秒）"},"anonymous_image":"https://cdn.jsdelivr.net/gh/YunYouJun/cdn/img/avatar/none.jpg","say":{"api":"https://v1.hitokoto.cn","hitokoto":true},"fireworks":{"colors":["102, 167, 221","62, 131, 225","33, 78, 194"]}};
+  </script><link rel="stylesheet" href="/css/hexo-theme-yun.css"><script src="/js/utils.js"></script><script src="/js/hexo-theme-yun.js"></script><meta name="description" content="本文参考：https:&#x2F;&#x2F;learnopengl.com&#x2F;。 基础配置 下载 GLFW ：URL（可以下载源码自己编译，或者直接下载编译后的二进制文件） Windows 平台 opengl32.lib 包含在 Microsoft SDK 里，在Visual Studio安装的时默认安装了。  OpenGL只是一个标准、规范，具体实现是由驱动开发商针对特定显卡实现的。 OpenGL驱动版">
+<meta property="og:type" content="article">
+<meta property="og:title" content="OpenGL 1">
+<meta property="og:url" content="https://morisa66.github.io/2021/01/22/OpenGL1/index.html">
+<meta property="og:site_name" content="Little Web">
+<meta property="og:description" content="本文参考：https:&#x2F;&#x2F;learnopengl.com&#x2F;。 基础配置 下载 GLFW ：URL（可以下载源码自己编译，或者直接下载编译后的二进制文件） Windows 平台 opengl32.lib 包含在 Microsoft SDK 里，在Visual Studio安装的时默认安装了。  OpenGL只是一个标准、规范，具体实现是由驱动开发商针对特定显卡实现的。 OpenGL驱动版">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://raw.githubusercontent.com/morisa66/BlogImgs/master/opengl/1/glad.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/morisa66/BlogImgs/master/opengl/1/pipeline.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/morisa66/BlogImgs/master/opengl/1/vertex_attribute_pointer.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/morisa66/BlogImgs/master/opengl/1/vertex_array_objects.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/morisa66/BlogImgs/master/opengl/1/vertex_array_objects_ebo.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/morisa66/BlogImgs/master/opengl/1/vertex_attribute_pointer_interleaved.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/morisa66/BlogImgs/master/opengl/1/out1.PNG">
+<meta property="og:image" content="https://raw.githubusercontent.com/morisa66/BlogImgs/master/opengl/1/texture_wrapping.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/morisa66/BlogImgs/master/opengl/1/filter_nearest.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/morisa66/BlogImgs/master/opengl/1/filter_linear.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/morisa66/BlogImgs/master/opengl/1/mipmaps.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/morisa66/BlogImgs/master/opengl/1/out2.PNG">
+<meta property="og:image" content="https://raw.githubusercontent.com/morisa66/BlogImgs/master/opengl/1/coordinate_systems.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/morisa66/BlogImgs/master/opengl/1/orthographic_frustum.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/morisa66/BlogImgs/master/opengl/1/perspective_frustum.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/morisa66/BlogImgs/master/opengl/1/camera_axes.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/morisa66/BlogImgs/master/opengl/1/camera_pitch_yaw_roll.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/morisa66/BlogImgs/master/opengl/1/camera_py.png">
+<meta property="article:published_time" content="2021-01-22T15:10:02.000Z">
+<meta property="article:modified_time" content="2021-01-20T03:29:50.000Z">
+<meta property="article:author" content="morisa">
+<meta property="article:tag" content="CPP">
+<meta property="article:tag" content="OpenGL">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/morisa66/BlogImgs/master/opengl/1/glad.png"><script src="/js/ui/mode.js"></script></head><body><script defer src="https://cdn.jsdelivr.net/npm/animejs@latest"></script><script defer src="/js/ui/fireworks.js"></script><canvas class="fireworks"></canvas><div class="container"><a class="sidebar-toggle hty-icon-button" id="menu-btn"><div class="hamburger hamburger--spin" type="button"><span class="hamburger-box"><span class="hamburger-inner"></span></span></div></a><div class="sidebar-toggle sidebar-overlay"></div><aside class="sidebar"><script src="/js/sidebar.js"></script><ul class="sidebar-nav"><li class="sidebar-nav-item sidebar-nav-toc hty-icon-button sidebar-nav-active" data-target="post-toc-wrap" title="文章目录"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-list-ordered"></use></svg></li><li class="sidebar-nav-item sidebar-nav-overview hty-icon-button" data-target="site-overview-wrap" title="站点概览"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-passport-line"></use></svg></li></ul><div class="sidebar-panel" id="site-overview-wrap"><div class="site-info fix-top"><a class="site-author-avatar" href="/about/" title="morisa"><img width="96" loading="lazy" src="/imgs/avatar.jpg" alt="morisa"></a><div class="site-author-name"><a href="/about/">morisa</a></div><a class="site-name" href="/about/site.html">Little Web</a><sub class="site-subtitle"></sub><div class="site-desciption"></div></div><nav class="site-state"><a class="site-state-item hty-icon-button icon-home" href="/" title="首页"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-home-4-line"></use></svg></span></a><div class="site-state-item"><a href="/archives/" title="归档"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-archive-line"></use></svg></span><span class="site-state-item-count">19</span></a></div><div class="site-state-item"><a href="/categories/" title="分类"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-folder-2-line"></use></svg></span><span class="site-state-item-count">3</span></a></div><div class="site-state-item"><a href="/tags/" title="标签"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-price-tag-3-line"></use></svg></span><span class="site-state-item-count">11</span></a></div><a class="site-state-item hty-icon-button" target="_blank" rel="noopener" href="https://yun.yunyoujun.cn" title="文档"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-settings-line"></use></svg></span></a></nav><hr style="margin-bottom:0.5rem"><div class="links-of-author"><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://github.com/morisa66" title="GitHub" target="_blank" style="color:#6e5494"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-github-line"></use></svg></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://www.zhihu.com/people/morisa-48" title="知乎" target="_blank" style="color:#0084FF"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-zhihu-line"></use></svg></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://space.bilibili.com/289542802" title="B站" target="_blank" style="color:#FF8EB3"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-bilibili-line"></use></svg></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://twitter.com/morisa66" title="Twitter" target="_blank" style="color:#1da1f2"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-twitter-line"></use></svg></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="morisa66@outlook.com" title="E-Mail" target="_blank" style="color:#8E71C1"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-mail-line"></use></svg></a></div><br><a class="links-item hty-icon-button" id="toggle-mode-btn" href="javascript:;" title="Mode" style="color: #f1cb64"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-contrast-2-line"></use></svg></a></div><div class="sidebar-panel sidebar-panel-active" id="post-toc-wrap"><div class="post-toc"><div class="post-toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%9F%BA%E7%A1%80%E9%85%8D%E7%BD%AE"><span class="toc-number">1.</span> <span class="toc-text">基础配置</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%B8%B2%E6%9F%93"><span class="toc-number">2.</span> <span class="toc-text">渲染</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A6%82%E8%BF%B0"><span class="toc-number">2.1.</span> <span class="toc-text">概述</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#glsl"><span class="toc-number">2.2.</span> <span class="toc-text">GLSL</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#vbo"><span class="toc-number">2.3.</span> <span class="toc-text">VBO</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#vao"><span class="toc-number">2.4.</span> <span class="toc-text">VAO</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ebo"><span class="toc-number">2.5.</span> <span class="toc-text">EBO</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A4%9A%E5%B1%9E%E6%80%A7%E5%A1%AB%E5%85%85"><span class="toc-number">2.6.</span> <span class="toc-text">多属性填充</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BA%B9%E7%90%86"><span class="toc-number">2.7.</span> <span class="toc-text">纹理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#z-buffer"><span class="toc-number">2.8.</span> <span class="toc-text">Z-Buffer</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%9D%90%E6%A0%87%E7%B3%BB%E7%BB%9F"><span class="toc-number">3.</span> <span class="toc-text">坐标系统</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#glm"><span class="toc-number">3.1.</span> <span class="toc-text">GLM</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9D%90%E6%A0%87%E5%8F%98%E6%8D%A2"><span class="toc-number">3.2.</span> <span class="toc-text">坐标变换</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8A%95%E5%BD%B1"><span class="toc-number">3.3.</span> <span class="toc-text">投影</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#mvp"><span class="toc-number">3.4.</span> <span class="toc-text">MVP</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%91%84%E5%83%8F%E6%9C%BA"><span class="toc-number">3.5.</span> <span class="toc-text">摄像机</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%AC%A7%E6%8B%89%E8%A7%92"><span class="toc-number">3.6.</span> <span class="toc-text">欧拉角</span></a></li></ol></li></ol></div></div></div></aside><main class="sidebar-translate" id="content"><div id="post"><article class="hty-card post-block" itemscope itemtype="https://schema.org/Article"><link itemprop="mainEntityOfPage" href="https://morisa66.github.io/2021/01/22/OpenGL1/"><span hidden itemprop="author" itemscope itemtype="https://schema.org/Person"><meta itemprop="name" content="morisa"><meta itemprop="description"></span><span hidden itemprop="publisher" itemscope itemtype="https://schema.org/Organization"><meta itemprop="name" content="Little Web"></span><header class="post-header"><h1 class="post-title" itemprop="name headline">OpenGL 1</h1><div class="post-meta"><div class="post-time" style="display:inline-block"><span class="post-meta-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-calendar-line"></use></svg></span> <time title="创建时间：2021-01-22 23:10:02" itemprop="dateCreated datePublished" datetime="2021-01-22T23:10:02+08:00">2021-01-22</time><span class="post-meta-divider">-</span><span class="post-meta-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-calendar-2-line"></use></svg></span> <time title="修改时间：2021-01-20 11:29:50" itemprop="dateModified" datetime="2021-01-20T11:29:50+08:00">2021-01-20</time></div><div class="post-classify"><span class="post-category"> <span class="post-meta-item-icon" style="margin-right:3px;"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-folder-line"></use></svg></span><span itemprop="about" itemscope itemtype="https://schema.org/Thing"><a class="category" href="/categories/Graphics/" style="--text-color:var(--hty-text-color)" itemprop="url" rel="index"><span itemprop="text">Graphics</span></a></span></span><span class="post-tag"><span class="post-meta-divider">-</span><a class="tag" href="/tags/CPP/" style="--text-color:var(--hty-text-color)"><span class="post-meta-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-price-tag-3-line"></use></svg></span><span class="tag-name">CPP</span></a><a class="tag" href="/tags/OpenGL/" style="--text-color:var(--hty-text-color)"><span class="post-meta-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-price-tag-3-line"></use></svg></span><span class="tag-name">OpenGL</span></a></span></div></div></header><section class="post-body" itemprop="articleBody"><div class="post-content markdown-body" style="--smc-primary:#0078E7;"><p>本文参考：https://learnopengl.com/。</p>
+<h1 id="基础配置">基础配置</h1>
+<p>下载 <code>GLFW</code> ：<a target="_blank" rel="noopener" href="https://www.glfw.org/download.html">URL</a>（可以下载源码自己编译，或者直接下载编译后的二进制文件）</p>
+<p>Windows 平台 <code>opengl32.lib</code> 包含在 Microsoft SDK 里，在Visual Studio安装的时默认安装了。</p>
+<blockquote>
+<p>OpenGL只是一个标准、规范，具体实现是由驱动开发商针对特定显卡实现的。</p>
+<p>OpenGL驱动版本众多，大多数函数的位置都无法在编译时确定下来，需要在运行时查询。开发者需要在运行时获取函数地址并将其保存在一个函数指针中供以后使用。取得地址的方法因平台而异，Windows上是这样：</p>
+<pre class="line-numbers language-cpp" data-language="cpp"><code class="language-cpp"><span class="token comment">// 定义函数原型</span>
+<span class="token keyword">typedef</span> <span class="token keyword">void</span> <span class="token punctuation">(</span><span class="token operator">*</span>GL_GENBUFFERS<span class="token punctuation">)</span> <span class="token punctuation">(</span>GLsizei<span class="token punctuation">,</span> GLuint<span class="token operator">*</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token comment">// 找到正确的函数并赋值给函数指针</span>
+GL_GENBUFFERS glGenBuffers  <span class="token operator">=</span> <span class="token punctuation">(</span>GL_GENBUFFERS<span class="token punctuation">)</span><span class="token function">wglGetProcAddress</span><span class="token punctuation">(</span><span class="token string">"glGenBuffers"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token comment">// 现在函数可以被正常调用</span>
+GLuint buffer<span class="token punctuation">;</span>
+<span class="token function">glGenBuffers</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token operator">&amp;</span>buffer<span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+</blockquote>
+<p>需要对每个可能使用的函数都重复这个过程，<code>GLAD</code>可以简化这样的操作。</p>
+<p>可以在<a target="_blank" rel="noopener" href="https://glad.dav1d.de/">这里</a>在线加载某个版本所有相关 OpenGL 函数，下面是我的生成设置。</p>
+<p><img src="https://raw.githubusercontent.com/morisa66/BlogImgs/master/opengl/1/glad.png" / loading="lazy"></p>
+<p>生成后解压放到合适的位置，进行 VS 的相关配置如下：</p>
+<blockquote>
+<ul>
+<li>VC ++ 目录
+<ul>
+<li>包含目录：加入GLFW 和 GLAD 的 include 文件夹。</li>
+<li>库目录：对应版本（x86/x64、lib-vc20xx）的 GLFW 库文件。</li>
+</ul></li>
+<li>链接器
+<ul>
+<li>输入：加入 opengl32.lib 和 glfw3.lib。</li>
+</ul></li>
+<li>把生成的 glad.c 文件放到工程目录中。</li>
+</ul>
+</blockquote>
+<h1 id="渲染">渲染</h1>
+<h2 id="概述">概述</h2>
+<p>OpenGL 大部分工作是把3D坐标转变为适应屏幕的2D像素。</p>
+<p>图形渲染管线主要有两部分：第一部分把3D坐标转换为2D坐标，第二部分把2D坐标转变为实际有颜色的像素。</p>
+<p>图形渲染管线若干部分，每个部分将会把前一个阶段的输出作为输入，这些部分高度专门化（有一个特定函数），很容易<strong>并行</strong>执行。当今大多数显卡都有成千上万小处理核心，在GPU上为每一个（渲染管线）部分运行各自的小程序（<code>shader</code>），在图形渲染管线中快速处理数据。</p>
+<p>有些部分允许开发者自己写着色器来替换默认的着色器（下图<strong>蓝色</strong>部分），下面按顺序介绍。</p>
+<p><img src="https://raw.githubusercontent.com/morisa66/BlogImgs/master/opengl/1/pipeline.png" / loading="lazy"></p>
+<ul>
+<li><p>顶点着色器(Vertex Shader)：一个单独的顶点作为输入，把一种 3D 坐标转为另一种 3D 坐标，并对顶点属性进行一些基本处理。</p></li>
+<li><p>图元装配(Primitive Assembly)：顶点着色器输出的所有顶点作为输入，把所有的点装配成指定图元的形状。</p></li>
+<li><p>几何着色器(Geometry Shader)：把图元形式的一系列顶点的集合作为输入，可以通过产生新顶点构造出新的图元来生成其他形状。</p></li>
+<li><p>光栅化(Rasterization)：把图元映射为最终屏幕上相应的像素，生成供片段着色器使用的片段（fragment）。</p>
+<blockquote>
+<p>在OpenGL中，一个片段是OpenGL渲染一个像素所需的所有数据。</p>
+</blockquote></li>
+<li><p>片段着色器(Fragment Shader)：主要是计算一个像素的最终颜色（所有OpenGL高级效果产生的地方）。</p>
+<blockquote>
+<p>片段着色器含3D场景的数据（如光照、阴影、光的颜色等），这些数据被用来计算最终像素的颜色。</p>
+</blockquote></li>
+<li><p>Alpha 测试和混合(Blending)：检测片段对应深度（和模板(Stencil)）值，判断这个像素是在它物体的前面还是后面，决定是否应该丢弃；检查alpha值（透明度），并对物体进行混合。</p>
+<blockquote>
+<p>片段着色器中计算出来一个像素输出的颜色，在渲染多个三角形的时候最后的像素颜色也可能完全不同。</p>
+</blockquote></li>
+</ul>
+<p>在顶点着色器中处理过的坐标是<strong>标准化设备坐标(Normalized Device Coordinates, NDC)</strong>。</p>
+<blockquote>
+<p>x、y、z 坐标范围在 [-1, 1] 之间，在范围外的坐标都会被丢弃、裁剪，不会显示在屏幕上。</p>
+</blockquote>
+<p>通过 <code>glViewport</code> 函数提供的数据，进行视口变换(Viewport Transform)，标准化设备坐标会变换为屏幕空间坐标(Screen-space Coordinates)。</p>
+<ul>
+<li>顶点数组对象：Vertex Array Object，VAO</li>
+<li>顶点缓冲对象：Vertex Buffer Object，VBO</li>
+<li>索引缓冲对象：Element Buffer Object，EBO或Index Buffer Object，IBO</li>
+</ul>
+<h2 id="glsl">GLSL</h2>
+<p>GLSL 是C类语言写成的，包含一些针对向量和矩阵操作的特性，整体架构如下：</p>
+<pre class="line-numbers language-glsl" data-language="glsl"><code class="language-glsl"><span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">version</span> <span class="token expression">version_number</span></span>
+
+<span class="token comment">// layout (location = n) 顶点着色器</span>
+<span class="token keyword">in</span> type in_variable_name<span class="token punctuation">;</span>
+
+<span class="token keyword">out</span> type out_variable_name<span class="token punctuation">;</span>
+
+<span class="token keyword">uniform</span> type uniform_name<span class="token punctuation">;</span>
+
+<span class="token keyword">void</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#123;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p><strong>顶点着色器</strong>的输入变量也叫顶点属性(Vertex Attribute)。</p>
+<p>OpenGL 至少有 16 个 4 分量顶点属性，有些硬件允许更多顶点属性，用 <strong>GL_MAX_VERTEX_ATTRIBS</strong> 获取上限。</p>
+<pre class="line-numbers language-cpp" data-language="cpp"><code class="language-cpp"><span class="token keyword">int</span> nrAttributes<span class="token punctuation">;</span>
+<span class="token function">glGetIntegerv</span><span class="token punctuation">(</span>GL_MAX_VERTEX_ATTRIBS<span class="token punctuation">,</span> <span class="token operator">&amp;</span>nrAttributes<span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<p><strong>基础数据类型</strong>：<code>int</code>、<code>float</code>、<code>double</code>、<code>uint</code>和<code>bool</code>。</p>
+<p><strong>向量</strong>：通过 <code>xyzw</code> 、<code>rgba</code>、<code>stpq</code>（纹理）获取各个分量。</p>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;">类型</th>
+<th style="text-align: left;">含义</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><code>vecn</code></td>
+<td style="text-align: left;">包含<code>n</code>个<code>float</code>分量</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>bvecn</code></td>
+<td style="text-align: left;">包含<code>n</code>个<code>bool</code>分量</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>ivecn</code></td>
+<td style="text-align: left;">包含<code>n</code>个<code>int</code>分量</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>uvecn</code></td>
+<td style="text-align: left;">包含<code>n</code>个<code>unsigned int</code>分量</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>dvecn</code></td>
+<td style="text-align: left;">包含<code>n</code>个<code>double</code>分量</td>
+</tr>
+</tbody>
+</table>
+<p><strong>重组(Swizzling)</strong></p>
+<pre class="line-numbers language-glsl" data-language="glsl"><code class="language-glsl"><span class="token keyword">vec2</span> someVec<span class="token punctuation">;</span>
+<span class="token keyword">vec4</span> differentVec <span class="token operator">=</span> someVec<span class="token punctuation">.</span>xyxx<span class="token punctuation">;</span>
+<span class="token keyword">vec3</span> anotherVec <span class="token operator">=</span> differentVec<span class="token punctuation">.</span>zyw<span class="token punctuation">;</span>
+<span class="token keyword">vec4</span> otherVec <span class="token operator">=</span> someVec<span class="token punctuation">.</span>xxxx <span class="token operator">+</span> anotherVec<span class="token punctuation">.</span>yxzy<span class="token punctuation">;</span>
+<span class="token keyword">vec2</span> vect <span class="token operator">=</span> <span class="token keyword">vec2</span><span class="token punctuation">(</span><span class="token number">0.5</span><span class="token punctuation">,</span> <span class="token number">0.7</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">vec4</span> result <span class="token operator">=</span> <span class="token keyword">vec4</span><span class="token punctuation">(</span>vect<span class="token punctuation">,</span> <span class="token number">0.0</span><span class="token punctuation">,</span> <span class="token number">0.0</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">vec4</span> otherResult <span class="token operator">=</span> <span class="token keyword">vec4</span><span class="token punctuation">(</span>result<span class="token punctuation">.</span>xyz<span class="token punctuation">,</span> <span class="token number">1.0</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>在顶点着色器中，使用<code>location</code>指定输入变量，可以在CPU上配置顶点属性。</p>
+<p>顶点着色器需要输入提供一个额外的<code>layout</code>标识，才能链接到顶点数据。</p>
+<blockquote>
+<p>忽略<code>layout (location = 0)</code>标识符，在 OpenGL中使用<code>glGetAttribLocation</code>查询属性位置值。</p>
+<p>在着色器中设置，会更容易理解而且节省 OpenGL 的工作量。</p>
+</blockquote>
+<p>片段着色器输出一个<code>vec4</code>颜色变量，没有定义输出颜色，OpenGL会把物体渲染为黑色（或白色）。</p>
+<p><strong>Uniform</strong>：从 CPU 向 GPU 中着色器发送数据的方式，是全局(Global)的。</p>
+<p>uniform 变量在每个着色器程序对象中都唯一，可以被任意着色器在任意阶段访问，uniform 会一直数据，直到被重置或更新。</p>
+<blockquote>
+<p>声明了一个 uniform 却在GLSL代码中没使用，编译器会默认移它。</p>
+</blockquote>
+<pre class="line-numbers language-cpp" data-language="cpp"><code class="language-cpp"><span class="token comment">//返回-1表示没有找到位置值</span>
+<span class="token keyword">int</span> uniformLocation <span class="token operator">=</span> <span class="token function">glGetUniformLocation</span><span class="token punctuation">(</span>shaderID<span class="token punctuation">,</span> <span class="token string">"uniformName"</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<p>OpenGL 核心是一个C库，不支持类型重载。<code>glUniform</code> 设置 uniform 的值，根据后缀来选用：</p>
+<ul>
+<li><code>f</code> 1个<code>float</code><br />
+</li>
+<li><code>i</code> 1个<code>int</code></li>
+<li><code>ui</code> 1个<code>unsigned int</code></li>
+<li><code>3f</code> 3个<code>float</code></li>
+<li><code>fv</code> 1个<code>float向量、数组</code></li>
+</ul>
+<h2 id="vbo">VBO</h2>
+<p>通过 VBO 管理储存的顶点数据的 GPU 内存(显存)，使用 VBO 可以一次性发送一大批数据到 GPU。</p>
+<blockquote>
+<p>把数据从 CPU 发送到 GPU 相对较慢，要尝试尽量一次性发送尽可能多的数据。</p>
+<p>顶点着色器访问显存里面的顶点数据是个非常快的过程。</p>
+</blockquote>
+<p>VBO 有唯一 ID，使用 <code>glGenBuffers</code>函数和一个 ID 生成一个 VBO。</p>
+<pre class="line-numbers language-cpp" data-language="cpp"><code class="language-cpp"><span class="token keyword">unsigned</span> <span class="token keyword">int</span> VBO<span class="token punctuation">;</span>
+<span class="token function">glGenBuffers</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token operator">&amp;</span>VBO<span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<p>VBO 缓冲类型是 <strong>GL_ARRAY_BUFFER</strong>，使用 <code>glBindBuffer</code>绑定。</p>
+<pre class="line-numbers language-cpp" data-language="cpp"><code class="language-cpp"><span class="token function">glBindBuffer</span><span class="token punctuation">(</span>GL_ARRAY_BUFFER<span class="token punctuation">,</span> VBO<span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>使用任何在 <strong>GL_ARRAY_BUFFER</strong> 目标上的缓冲调用都会用来配置当前绑定的缓冲(VBO)。</p>
+<p>调用 <code>glBufferData</code> 函数会把定义的顶点数据复制到缓冲的显存中。</p>
+<pre class="line-numbers language-cpp" data-language="cpp"><code class="language-cpp"><span class="token function">glBufferData</span><span class="token punctuation">(</span>GL_ARRAY_BUFFER<span class="token punctuation">,</span> <span class="token keyword">sizeof</span><span class="token punctuation">(</span>vertices<span class="token punctuation">)</span><span class="token punctuation">,</span> vertices<span class="token punctuation">,</span> GL_STATIC_DRAW<span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<blockquote>
+<ul>
+<li>param1：target buffer type</li>
+<li>param2：data size (byte)</li>
+<li>param3：data</li>
+<li>param4：data change frequency
+<ul>
+<li>GL_STATIC_DRAW ：never or hardly ever</li>
+<li>GL_DYNAMIC_DRAW：often</li>
+<li>GL_STREAM_DRAW ：always</li>
+</ul></li>
+</ul>
+</blockquote>
+<p><strong>链接顶点属性</strong></p>
+<pre class="line-numbers language-cpp" data-language="cpp"><code class="language-cpp">GLfloat vertices<span class="token punctuation">[</span><span class="token punctuation">]</span> <span class="token operator">=</span> 
+<span class="token punctuation">&#123;</span>
+    <span class="token operator">-</span><span class="token number">0.5f</span><span class="token punctuation">,</span> <span class="token operator">-</span><span class="token number">0.5f</span><span class="token punctuation">,</span> <span class="token number">0.0f</span><span class="token punctuation">,</span>
+     <span class="token number">0.5f</span><span class="token punctuation">,</span> <span class="token operator">-</span><span class="token number">0.5f</span><span class="token punctuation">,</span> <span class="token number">0.0f</span><span class="token punctuation">,</span>
+     <span class="token number">0.0f</span><span class="token punctuation">,</span>  <span class="token number">0.5f</span><span class="token punctuation">,</span> <span class="token number">0.0f</span>
+<span class="token punctuation">&#125;</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<blockquote>
+<p>float 和 GLfloat 是同一种数据类型。</p>
+<pre class="line-numbers language-cpp" data-language="cpp"><code class="language-cpp"><span class="token keyword">typedef</span> <span class="token keyword">float</span> khronos_float_t<span class="token punctuation">;</span>
+<span class="token keyword">typedef</span> khronos_float_t GLfloat<span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+</blockquote>
+<p><code>glVertexAttribPointer</code> 函数告诉 OpenGL 如何解析顶点数据（应用到逐个顶点属性上）。</p>
+<pre class="line-numbers language-cpp" data-language="cpp"><code class="language-cpp"><span class="token function">glVertexAttribPointer</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">,</span> <span class="token number">3</span><span class="token punctuation">,</span> GL_FLOAT<span class="token punctuation">,</span> GL_FALSE<span class="token punctuation">,</span> <span class="token number">3</span> <span class="token operator">*</span> <span class="token keyword">sizeof</span><span class="token punctuation">(</span><span class="token keyword">float</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token keyword">void</span><span class="token operator">*</span><span class="token punctuation">)</span><span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p><img src="https://raw.githubusercontent.com/morisa66/BlogImgs/master/opengl/1/vertex_attribute_pointer.png" / loading="lazy"></p>
+<blockquote>
+<ul>
+<li>param1：对应顶点着色器中<code>layout(location = 0)</code>。</li>
+<li>param2：一组值的个数（3个）。</li>
+<li>param3：数据类型。</li>
+<li>param4：是否映射到 0（signed number 是 -1 ） 到 1。</li>
+<li>param5：stride，连续顶点属性组间隔（3 * sizeof(float)）。</li>
+<li>param6：<code>void*</code> 类型，表示位置数据在缓冲中起始位置的偏移量（Offset）。</li>
+</ul>
+</blockquote>
+<p>每个顶点属性从一个 VBO 管理的内存中获得数据，从哪个 VBO（程序中可以有多个VBO）获取，是通过在调用<code>glVertexAttribPointer</code> 时绑定到 <strong>GL_ARRAY_BUFFER</strong> 的 VBO 决定。</p>
+<p>使用 <code>glEnableVertexAttribArray</code>，以顶点属性位置值（这里 layout(location = 0)）为参数，启用顶点属性。</p>
+<blockquote>
+<p>顶点属性默认是禁用的。</p>
+</blockquote>
+<p>使用一个 VBO 将顶点数据初始化至缓冲中，建立一个顶点着色器和一个片段着色器，并告诉 OpenGL 把顶点数据链接到顶点着色器的顶点属性上。</p>
+<h2 id="vao">VAO</h2>
+<p>VAO 可以被绑定，之后的属性调用都会储存在当前绑定的 VAO 中。</p>
+<p>当配置顶点属性指针时，只需要将那些调用执行一次，绘制物体的时候只需要绑定相应的 VAO 就行了。</p>
+<blockquote>
+<p>OpenGL 的 Core 模式要求使用 VAO，它知道该如何处理顶点输入。</p>
+<p>绑定 VAO 失败，OpenGL会拒绝绘制任何东西。</p>
+</blockquote>
+<p>VAO 存储的内容：</p>
+<ul>
+<li><code>glEnableVertexAttribArray</code> 和 <code>glDisableVertexAttribArray</code> 的调用。</li>
+<li><code>glVertexAttribPointer</code>设置的顶点属性配置和与顶点属性关联的 VBO 。</li>
+</ul>
+<p><img src="https://raw.githubusercontent.com/morisa66/BlogImgs/master/opengl/1/vertex_array_objects.png" / loading="lazy"></p>
+<p>创建一个 VAO。</p>
+<pre class="line-numbers language-cpp" data-language="cpp"><code class="language-cpp"><span class="token keyword">unsigned</span> <span class="token keyword">int</span> VAO<span class="token punctuation">;</span>
+<span class="token function">glGenVertexArrays</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token operator">&amp;</span>VAO<span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<p>使用 <code>glBindVertexArray</code> 绑定VAO，之后应该绑定和配置对应的 VBO 和属性指针，再解绑 VAO 供之后使用。</p>
+<p>绘制一个物体时，只要在绘制物体前地把 VAO 绑定到希望使用的设定上就行。</p>
+<pre class="line-numbers language-cpp" data-language="cpp"><code class="language-cpp"><span class="token comment">// 初始化代码只运行一次，除非物体频繁改变</span>
+<span class="token keyword">unsigned</span> <span class="token keyword">int</span> VAO<span class="token punctuation">;</span>
+<span class="token function">glGenVertexArrays</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token operator">&amp;</span>VAO<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment">// 绑定VAO</span>
+<span class="token function">glBindVertexArray</span><span class="token punctuation">(</span>VAO<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment">// 顶点数组复制到缓冲中供OpenGL使用</span>
+<span class="token function">glBindBuffer</span><span class="token punctuation">(</span>GL_ARRAY_BUFFER<span class="token punctuation">,</span> VBO<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token function">glBufferData</span><span class="token punctuation">(</span>GL_ARRAY_BUFFER<span class="token punctuation">,</span> <span class="token keyword">sizeof</span><span class="token punctuation">(</span>vertices<span class="token punctuation">)</span><span class="token punctuation">,</span> vertices<span class="token punctuation">,</span> GL_STATIC_DRAW<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment">// 设置顶点属性指针</span>
+<span class="token function">glVertexAttribPointer</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">,</span> <span class="token number">3</span><span class="token punctuation">,</span> GL_FLOAT<span class="token punctuation">,</span> GL_FALSE<span class="token punctuation">,</span> <span class="token number">3</span> <span class="token operator">*</span> <span class="token keyword">sizeof</span><span class="token punctuation">(</span><span class="token keyword">float</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token keyword">void</span><span class="token operator">*</span><span class="token punctuation">)</span><span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token function">glEnableVertexAttribArray</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment">// ...</span>
+
+<span class="token comment">// in rendering loop: 绘制物体</span>
+<span class="token function">glUseProgram</span><span class="token punctuation">(</span>shaderProgram<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token function">glBindVertexArray</span><span class="token punctuation">(</span>VAO<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token function">someOpenGLFunctionThatDrawsOurTriangle</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<blockquote>
+<p>绘制多个物体时，首先要生成、配置所有的 VAO 和必须的 VBO 及属性指针，然后储存它们供后面使用。</p>
+<p>打算绘制物体的时候就拿出相应的 VAO，绑定它，绘制完物体后，再解绑 VAO。</p>
+</blockquote>
+<h2 id="ebo">EBO</h2>
+<p>绘制两个三角形来组成一个矩形。</p>
+<pre class="line-numbers language-cpp" data-language="cpp"><code class="language-cpp"><span class="token keyword">float</span> vertices<span class="token punctuation">[</span><span class="token punctuation">]</span> <span class="token operator">=</span> 
+<span class="token punctuation">&#123;</span>
+    <span class="token comment">// 1</span>
+    <span class="token number">0.5f</span><span class="token punctuation">,</span> <span class="token number">0.5f</span><span class="token punctuation">,</span> <span class="token number">0.0f</span><span class="token punctuation">,</span>   <span class="token comment">// 右上角</span>
+    <span class="token number">0.5f</span><span class="token punctuation">,</span> <span class="token operator">-</span><span class="token number">0.5f</span><span class="token punctuation">,</span> <span class="token number">0.0f</span><span class="token punctuation">,</span>  <span class="token comment">// 右下角</span>
+    <span class="token operator">-</span><span class="token number">0.5f</span><span class="token punctuation">,</span> <span class="token number">0.5f</span><span class="token punctuation">,</span> <span class="token number">0.0f</span><span class="token punctuation">,</span>  <span class="token comment">// 左上角</span>
+    <span class="token comment">// 2</span>
+    <span class="token number">0.5f</span><span class="token punctuation">,</span> <span class="token operator">-</span><span class="token number">0.5f</span><span class="token punctuation">,</span> <span class="token number">0.0f</span><span class="token punctuation">,</span>  <span class="token comment">// 右下角</span>
+    <span class="token operator">-</span><span class="token number">0.5f</span><span class="token punctuation">,</span> <span class="token operator">-</span><span class="token number">0.5f</span><span class="token punctuation">,</span> <span class="token number">0.0f</span><span class="token punctuation">,</span> <span class="token comment">// 左下角</span>
+    <span class="token operator">-</span><span class="token number">0.5f</span><span class="token punctuation">,</span> <span class="token number">0.5f</span><span class="token punctuation">,</span> <span class="token number">0.0f</span>   <span class="token comment">// 左上角</span>
+<span class="token punctuation">&#125;</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>EBO 是一个缓冲，储存索引，OpenGL 调用顶点的索引来决定该绘制哪个顶点。</p>
+<p>定义不重复的顶点，和绘制出矩形所需的索引：</p>
+<pre class="line-numbers language-cpp" data-language="cpp"><code class="language-cpp"><span class="token keyword">float</span> vertices<span class="token punctuation">[</span><span class="token punctuation">]</span> <span class="token operator">=</span> 
+<span class="token punctuation">&#123;</span>
+    <span class="token number">0.5f</span><span class="token punctuation">,</span> <span class="token number">0.5f</span><span class="token punctuation">,</span> <span class="token number">0.0f</span><span class="token punctuation">,</span>   <span class="token comment">// 右上角</span>
+    <span class="token number">0.5f</span><span class="token punctuation">,</span> <span class="token operator">-</span><span class="token number">0.5f</span><span class="token punctuation">,</span> <span class="token number">0.0f</span><span class="token punctuation">,</span>  <span class="token comment">// 右下角</span>
+    <span class="token operator">-</span><span class="token number">0.5f</span><span class="token punctuation">,</span> <span class="token operator">-</span><span class="token number">0.5f</span><span class="token punctuation">,</span> <span class="token number">0.0f</span><span class="token punctuation">,</span> <span class="token comment">// 左下角</span>
+    <span class="token operator">-</span><span class="token number">0.5f</span><span class="token punctuation">,</span> <span class="token number">0.5f</span><span class="token punctuation">,</span> <span class="token number">0.0f</span>   <span class="token comment">// 左上角</span>
+<span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
+<span class="token keyword">unsigned</span> <span class="token keyword">int</span> indices<span class="token punctuation">[</span><span class="token punctuation">]</span> <span class="token operator">=</span>
+<span class="token punctuation">&#123;</span> 
+    <span class="token number">0</span><span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">3</span><span class="token punctuation">,</span> <span class="token comment">// 1</span>
+    <span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">2</span><span class="token punctuation">,</span> <span class="token number">3</span>  <span class="token comment">// 2</span>
+<span class="token punctuation">&#125;</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>创建一个 EBO。</p>
+<pre class="line-numbers language-cpp" data-language="cpp"><code class="language-cpp"><span class="token keyword">unsigned</span> <span class="token keyword">int</span> EBO<span class="token punctuation">;</span>
+<span class="token function">glGenBuffers</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token operator">&amp;</span>EBO<span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<p>用 <code>glBufferData</code> 把索引复制到缓冲里，缓冲的类型定义为 <strong>GL_ELEMENT_ARRAY_BUFFER</strong>。</p>
+<pre class="line-numbers language-cpp" data-language="cpp"><code class="language-cpp"><span class="token function">glBindBuffer</span><span class="token punctuation">(</span>GL_ELEMENT_ARRAY_BUFFER<span class="token punctuation">,</span> EBO<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token function">glBufferData</span><span class="token punctuation">(</span>GL_ELEMENT_ARRAY_BUFFER<span class="token punctuation">,</span> <span class="token keyword">sizeof</span><span class="token punctuation">(</span>indices<span class="token punctuation">)</span><span class="token punctuation">,</span> indices<span class="token punctuation">,</span> GL_STATIC_DRAW<span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<p>用 <code>glDrawElements</code> 指明索引缓冲渲染，使用当前绑定的 EBO 中的索引进行绘制。</p>
+<pre class="line-numbers language-cpp" data-language="cpp"><code class="language-cpp"><span class="token function">glBindBuffer</span><span class="token punctuation">(</span>GL_ELEMENT_ARRAY_BUFFER<span class="token punctuation">,</span> EBO<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token function">glDrawElements</span><span class="token punctuation">(</span>GL_TRIANGLES<span class="token punctuation">,</span> <span class="token number">6</span><span class="token punctuation">,</span> GL_UNSIGNED_INT<span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<blockquote>
+<ul>
+<li>param1：绘制模式 <strong>GL_TRIANGLES</strong>。</li>
+<li>param2：绘制顶点个数。</li>
+<li>param3：索引类型 <strong>GL_UNSIGNED_INT</strong>。</li>
+<li>param4：EBO 偏移量（不使用 EBO，可以传递一个索引数组）。</li>
+</ul>
+</blockquote>
+<p>用<code>glDrawElements</code>函数从当前绑定到 <strong>GL_ELEMENT_ARRAY_BUFFER</strong> 目标的EBO中获取索引，因此在每次要用索引渲染一个物体时绑定相应的 EBO。VAO 可以保存 EBO 的绑定状态，VAO 绑定时正在绑定的 EBO 会被保存为 VAO 的元素缓冲对象。绑定 VAO 的同时也会自动绑定 EBO。</p>
+<p><img src="https://raw.githubusercontent.com/morisa66/BlogImgs/master/opengl/1/vertex_array_objects_ebo.png" / loading="lazy"></p>
+<blockquote>
+<p>目标是 <strong>GL_ELEMENT_ARRAY_BUFFER</strong> ，VAO 会储存 <code>glBindBuffer</code>函数调用，因此会储存解绑调用。</p>
+<p>确保没有在解绑 VAO 之前解绑 EBO，否则它就没有这个 EBO 配置了。</p>
+</blockquote>
+<pre class="line-numbers language-cpp" data-language="cpp"><code class="language-cpp"><span class="token comment">// 初始化VAO, VBO, EBO</span>
+
+<span class="token comment">// 绑定VAO</span>
+<span class="token function">glBindVertexArray</span><span class="token punctuation">(</span>VAO<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment">// 把顶点数组复制到VBO中，供OpenGL使用</span>
+<span class="token function">glBindBuffer</span><span class="token punctuation">(</span>GL_ARRAY_BUFFER<span class="token punctuation">,</span> VBO<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token function">glBufferData</span><span class="token punctuation">(</span>GL_ARRAY_BUFFER<span class="token punctuation">,</span> <span class="token keyword">sizeof</span><span class="token punctuation">(</span>vertices<span class="token punctuation">)</span><span class="token punctuation">,</span> vertices<span class="token punctuation">,</span> GL_STATIC_DRAW<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment">// 复制索引数组到EBO中，供OpenGL使用</span>
+<span class="token function">glBindBuffer</span><span class="token punctuation">(</span>GL_ELEMENT_ARRAY_BUFFER<span class="token punctuation">,</span> EBO<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token function">glBufferData</span><span class="token punctuation">(</span>GL_ELEMENT_ARRAY_BUFFER<span class="token punctuation">,</span> <span class="token keyword">sizeof</span><span class="token punctuation">(</span>indices<span class="token punctuation">)</span><span class="token punctuation">,</span> indices<span class="token punctuation">,</span> GL_STATIC_DRAW<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment">// 设置顶点属性指针</span>
+<span class="token function">glVertexAttribPointer</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">,</span> <span class="token number">3</span><span class="token punctuation">,</span> GL_FLOAT<span class="token punctuation">,</span> GL_FALSE<span class="token punctuation">,</span> <span class="token number">3</span> <span class="token operator">*</span> <span class="token keyword">sizeof</span><span class="token punctuation">(</span><span class="token keyword">float</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token keyword">void</span><span class="token operator">*</span><span class="token punctuation">)</span><span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token function">glEnableVertexAttribArray</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment">//...</span>
+
+<span class="token comment">// in rendering loop: 绘制物体</span>
+<span class="token function">glUseProgram</span><span class="token punctuation">(</span>shaderProgram<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token function">glBindVertexArray</span><span class="token punctuation">(</span>VAO<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token function">glDrawElements</span><span class="token punctuation">(</span>GL_TRIANGLES<span class="token punctuation">,</span> <span class="token number">6</span><span class="token punctuation">,</span> GL_UNSIGNED_INT<span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">)</span>
+<span class="token function">glBindVertexArray</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<blockquote>
+<p>通过<code>glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)</code>配置 OpenGL 如何绘制图元。</p>
+<ul>
+<li>param1：其应用到所有的三角形的正面和背面。</li>
+<li>param2：用线绘制。</li>
+</ul>
+<p>以线框模式绘制三角形，直到用<code>glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)</code>将其设置回默认模式。</p>
+</blockquote>
+<h2 id="多属性填充">多属性填充</h2>
+<pre class="line-numbers language-cpp" data-language="cpp"><code class="language-cpp"><span class="token keyword">unsigned</span> VAO<span class="token punctuation">,</span>VBO<span class="token punctuation">,</span>EBO<span class="token punctuation">;</span>
+
+<span class="token function">glGenVertexArrays</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token operator">&amp;</span>VAO<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token function">glGenBuffers</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token operator">&amp;</span>VBO<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token function">glGenBuffers</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token operator">&amp;</span>EBO<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token function">glBindVertexArray</span><span class="token punctuation">(</span>VAO<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">// bind VAO</span>
+
+<span class="token function">glBindBuffer</span><span class="token punctuation">(</span>GL_ARRAY_BUFFER<span class="token punctuation">,</span> VBO<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token function">glBufferData</span><span class="token punctuation">(</span>GL_ARRAY_BUFFER<span class="token punctuation">,</span> <span class="token keyword">sizeof</span><span class="token punctuation">(</span>vertices<span class="token punctuation">)</span><span class="token punctuation">,</span> vertices<span class="token punctuation">,</span> GL_STATIC_DRAW<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token function">glBindBuffer</span><span class="token punctuation">(</span>GL_ELEMENT_ARRAY_BUFFER<span class="token punctuation">,</span> EBO<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token function">glBufferData</span><span class="token punctuation">(</span>GL_ELEMENT_ARRAY_BUFFER<span class="token punctuation">,</span> <span class="token keyword">sizeof</span><span class="token punctuation">(</span>indices<span class="token punctuation">)</span><span class="token punctuation">,</span> indices<span class="token punctuation">,</span> GL_STATIC_DRAW<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment">// 位置</span>
+<span class="token function">glVertexAttribPointer</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">,</span> <span class="token number">3</span><span class="token punctuation">,</span> GL_FLOAT<span class="token punctuation">,</span> GL_FALSE<span class="token punctuation">,</span> <span class="token number">6</span> <span class="token operator">*</span> <span class="token keyword">sizeof</span><span class="token punctuation">(</span><span class="token keyword">float</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token keyword">void</span><span class="token operator">*</span><span class="token punctuation">)</span><span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token function">glEnableVertexAttribArray</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token comment">// 颜色</span>
+<span class="token function">glVertexAttribPointer</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">3</span><span class="token punctuation">,</span> GL_FLOAT<span class="token punctuation">,</span> GL_FALSE<span class="token punctuation">,</span> <span class="token number">6</span> <span class="token operator">*</span> <span class="token keyword">sizeof</span><span class="token punctuation">(</span><span class="token keyword">float</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token keyword">void</span><span class="token operator">*</span><span class="token punctuation">)</span><span class="token punctuation">(</span><span class="token number">3</span> <span class="token operator">*</span> <span class="token keyword">sizeof</span><span class="token punctuation">(</span><span class="token keyword">float</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token function">glEnableVertexAttribArray</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token function">glBindVertexArray</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">;</span>   <span class="token comment">// bind(0)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p><img src="https://raw.githubusercontent.com/morisa66/BlogImgs/master/opengl/1/vertex_attribute_pointer_interleaved.png" / loading="lazy"></p>
+<p>顶点着色器</p>
+<pre class="line-numbers language-glsl" data-language="glsl"><code class="language-glsl"><span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">version</span> <span class="token expression"><span class="token number">330</span> core</span></span>
+<span class="token keyword">layout</span> <span class="token punctuation">(</span>location <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token keyword">in</span> <span class="token keyword">vec3</span> aPos<span class="token punctuation">;</span>   <span class="token comment">// 位置变量的属性位置值为 0 </span>
+<span class="token keyword">layout</span> <span class="token punctuation">(</span>location <span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">)</span> <span class="token keyword">in</span> <span class="token keyword">vec3</span> aColor<span class="token punctuation">;</span> <span class="token comment">// 颜色变量的属性位置值为 1</span>
+
+<span class="token keyword">out</span> <span class="token keyword">vec3</span> ourColor<span class="token punctuation">;</span> <span class="token comment">// 向片段着色器输出一个颜色</span>
+
+<span class="token keyword">void</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#123;</span>
+    gl_Position <span class="token operator">=</span> <span class="token keyword">vec4</span><span class="token punctuation">(</span>aPos<span class="token punctuation">,</span> <span class="token number">1.0</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    ourColor <span class="token operator">=</span> aColor<span class="token punctuation">;</span> 
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>片段着色器</p>
+<pre class="line-numbers language-glsl" data-language="glsl"><code class="language-glsl"><span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">version</span> <span class="token expression"><span class="token number">330</span> core</span></span>
+<span class="token keyword">in</span> <span class="token keyword">vec3</span> ourColor<span class="token punctuation">;</span>
+<span class="token keyword">out</span> <span class="token keyword">vec4</span> FragColor<span class="token punctuation">;</span>
+
+<span class="token keyword">void</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#123;</span>
+    FragColor <span class="token operator">=</span> <span class="token keyword">vec4</span><span class="token punctuation">(</span>ourColor<span class="token punctuation">,</span><span class="token number">1.0f</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span> <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p><img src="https://raw.githubusercontent.com/morisa66/BlogImgs/master/opengl/1/out1.PNG" alt="out1" style="zoom:50%;" / loading="lazy"></p>
+<blockquote>
+<p><strong>线性插值</strong></p>
+<p>上面的输出是片段着色器中进行的片段插值(Fragment Interpolation)的结果。当渲染时，光栅化(Rasterization)通常会造成比原指定顶点更多片段。光栅会根据每个片段在三角形形状上的相对位置决定这些片段位置。 基于这些位置，插值(Interpolate)所有片段着色器的输入变量。</p>
+</blockquote>
+<h2 id="纹理">纹理</h2>
+<p>纹理坐标的范围是从 (0, 0) 到 (1, 1) ，坐标范围外的情况由<strong>纹理环绕方式</strong>决定。</p>
+<p><img src="https://raw.githubusercontent.com/morisa66/BlogImgs/master/opengl/1/texture_wrapping.png" / loading="lazy"></p>
+<p>使用 <code>glTexParameter</code> 函数对<code>s</code>或<code>t</code>（3D纹理有<code>r</code>）轴设置环绕方式。</p>
+<pre class="line-numbers language-cpp" data-language="cpp"><code class="language-cpp"><span class="token comment">// 默认行为</span>
+<span class="token function">glTexParameteri</span><span class="token punctuation">(</span>GL_TEXTURE_2D<span class="token punctuation">,</span> GL_TEXTURE_WRAP_S<span class="token punctuation">,</span> GL_MIRRORED_REPEAT<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token function">glTexParameteri</span><span class="token punctuation">(</span>GL_TEXTURE_2D<span class="token punctuation">,</span> GL_TEXTURE_WRAP_T<span class="token punctuation">,</span> GL_MIRRORED_REPEAT<span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+<blockquote>
+<ul>
+<li><p>param1：纹理目标，2D 纹理是 <strong>GL_TEXTURE_2D</strong>。</p></li>
+<li><p>param2：纹理轴。</p></li>
+<li><p>param3：环绕(Wrapping)方式，选择 <strong>GL_CLAMP_TO_BORDER</strong> 要额外指定边缘颜色。</p>
+<p>使用<code>glTexParameter</code>函数的<code>fv</code>后缀形式。</p>
+<pre class="line-numbers language-cpp" data-language="cpp"><code class="language-cpp"><span class="token keyword">float</span> borderColor<span class="token punctuation">[</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token punctuation">&#123;</span> <span class="token number">1.0f</span><span class="token punctuation">,</span> <span class="token number">1.0f</span><span class="token punctuation">,</span> <span class="token number">1.0f</span><span class="token punctuation">,</span> <span class="token number">1.0f</span> <span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
+<span class="token function">glTexParameterfv</span><span class="token punctuation">(</span>GL_TEXTURE_2D<span class="token punctuation">,</span> GL_TEXTURE_BORDER_COLOR<span class="token punctuation">,</span> borderColor<span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre></li>
+</ul>
+</blockquote>
+<p>纹理像素(Texture Pixel、Texel) 映射到纹理坐标，当物体很大、纹理分辨率很低时，有对于<strong>纹理过滤</strong>(Texture Filtering)的选项，主要是 <strong>GL_NEAREST</strong> 和 <strong>GL_LINEAR</strong>。</p>
+<p><strong>GL_NEAREST</strong>（邻近过滤，Nearest Neighbor Filtering），OpenGL 默认方式，选择中心点最接近纹理坐标的像素。</p>
+<p><img src="https://raw.githubusercontent.com/morisa66/BlogImgs/master/opengl/1/filter_nearest.png" / loading="lazy"></p>
+<p><strong>GL_LINEAR</strong>（线性过滤，(Bi)linear Filtering），基于附近纹理像素，计算出插值，近似出纹理像素之间的颜色。</p>
+<p><img src="https://raw.githubusercontent.com/morisa66/BlogImgs/master/opengl/1/filter_linear.png" / loading="lazy"></p>
+<p>当进行放大(Magnify)和缩小(Minify)时可以设置纹理过滤的选项。使用<code>glTexParameter</code>函数为指定过滤方式：</p>
+<pre class="line-numbers language-cpp" data-language="cpp"><code class="language-cpp"><span class="token function">glTexParameteri</span><span class="token punctuation">(</span>GL_TEXTURE_2D<span class="token punctuation">,</span> GL_TEXTURE_MIN_FILTER<span class="token punctuation">,</span> GL_NEAREST<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token function">glTexParameteri</span><span class="token punctuation">(</span>GL_TEXTURE_2D<span class="token punctuation">,</span> GL_TEXTURE_MAG_FILTER<span class="token punctuation">,</span> GL_LINEAR<span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<p>看下面的一个问题：</p>
+<blockquote>
+<p>每个物体上都有纹理，有些物体会很远，但其纹理会拥有与近处物体同样高的分辨率。远处的物体可能只产生很少的片段，从高分辨率纹理中为这些片段获取正确的颜色值很困难，需要对一个跨过纹理很大部分的片段只拾取一个纹理颜色。在小物体上这会产生不真实的感觉，并且使用高分辨率纹理浪费内存，影响性能。</p>
+</blockquote>
+<p>OpenGL使用<strong>多级渐远纹理</strong>(Mipmap)，一系列的纹理图像，后一个纹理图像是前一个的二分之一。距观察者的距离超过一定的阈值，OpenGL会使用不同的多级渐远纹理，即最适合物体的距离的那个。</p>
+<p><img src="https://raw.githubusercontent.com/morisa66/BlogImgs/master/opengl/1/mipmaps.png" / loading="lazy"></p>
+<p>使用 <code>glGenerateMipmaps</code> 函数，在创建完纹理后调用它， OpenGL 会完成其余工作。</p>
+<p>像普通的纹理过滤一样，可以指定不同多级渐远纹理级别之间的过滤方式。</p>
+<ul>
+<li><strong>GL_NEAREST_MIPMAP_NEAREST</strong>：使用最邻近的多级渐远纹理来匹配像素大小，用邻近插值进行纹理采样。</li>
+<li><strong>GL_LINEAR_MIPMAP_NEAREST</strong>：使用最邻近的多级渐远纹理级别，并使用线性插值进行采样。</li>
+<li><strong>GL_NEAREST_MIPMAP_LINEAR</strong>： 在两个最匹配像素大小的多级渐远纹理之间进行线性插值，使用邻近插值进行采样。</li>
+<li><strong>GL_LINEAR_MIPMAP_LINEAR</strong>：在两个邻近的多级渐远纹理之间使用线性插值，并使用线性插值进行采样。</li>
+</ul>
+<p>使用 <code>glTexParameteri</code> 设置过滤方式：</p>
+<pre class="line-numbers language-cpp" data-language="cpp"><code class="language-cpp"><span class="token function">glTexParameteri</span><span class="token punctuation">(</span>GL_TEXTURE_2D<span class="token punctuation">,</span> GL_TEXTURE_MIN_FILTER<span class="token punctuation">,</span> GL_LINEAR_MIPMAP_LINEAR<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token function">glTexParameteri</span><span class="token punctuation">(</span>GL_TEXTURE_2D<span class="token punctuation">,</span> GL_TEXTURE_MAG_FILTER<span class="token punctuation">,</span> GL_LINEAR<span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<blockquote>
+<p>多级渐远纹理主要是使用在纹理被缩小的情况下的，纹理放大不会使用多级渐远纹理，为放大过滤设置多级渐远纹理会产生一个 <strong>GL_INVALID_ENUM</strong> 错误代码。</p>
+</blockquote>
+<p><code>stb_image.h</code>是单头文件图像加载库，可以从<a target="_blank" rel="noopener" href="https://github.com/nothings/stb/blob/master/stb_image.h">这里</a>下载，并整合到项目中。</p>
+<pre class="line-numbers language-cpp" data-language="cpp"><code class="language-cpp"><span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">define</span> <span class="token macro-name">STB_IMAGE_IMPLEMENTATION</span></span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span> <span class="token string">"stb_image.h"</span></span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<p><code>#define STB_IMAGE_IMPLEMENTATION</code>，预处理器会修改头文件，让其只包含相关的函数定义源码。</p>
+<p>下面是加载纹理的示例</p>
+<pre class="line-numbers language-cpp" data-language="cpp"><code class="language-cpp"><span class="token keyword">unsigned</span> <span class="token function">m_load_img2D</span><span class="token punctuation">(</span><span class="token keyword">const</span> <span class="token keyword">char</span><span class="token operator">*</span> path<span class="token punctuation">)</span>
+<span class="token punctuation">&#123;</span>
+	<span class="token keyword">unsigned</span> texture<span class="token punctuation">;</span>
+	<span class="token function">glGenTextures</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token operator">&amp;</span>texture<span class="token punctuation">)</span><span class="token punctuation">;</span>
+	<span class="token function">glBindTexture</span><span class="token punctuation">(</span>GL_TEXTURE_2D<span class="token punctuation">,</span> texture<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+	<span class="token comment">// 环绕方式</span>
+	<span class="token function">glTexParameteri</span><span class="token punctuation">(</span>GL_TEXTURE_2D<span class="token punctuation">,</span> GL_TEXTURE_WRAP_S<span class="token punctuation">,</span> GL_REPEAT<span class="token punctuation">)</span><span class="token punctuation">;</span>
+	<span class="token function">glTexParameteri</span><span class="token punctuation">(</span>GL_TEXTURE_2D<span class="token punctuation">,</span> GL_TEXTURE_WRAP_T<span class="token punctuation">,</span> GL_REPEAT<span class="token punctuation">)</span><span class="token punctuation">;</span>
+	<span class="token comment">// 过滤方式</span>
+	<span class="token function">glTexParameteri</span><span class="token punctuation">(</span>GL_TEXTURE_2D<span class="token punctuation">,</span> GL_TEXTURE_MIN_FILTER<span class="token punctuation">,</span> GL_LINEAR<span class="token punctuation">)</span><span class="token punctuation">;</span>
+	<span class="token function">glTexParameteri</span><span class="token punctuation">(</span>GL_TEXTURE_2D<span class="token punctuation">,</span> GL_TEXTURE_MAG_FILTER<span class="token punctuation">,</span> GL_LINEAR<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+	<span class="token function">stbi_set_flip_vertically_on_load</span><span class="token punctuation">(</span><span class="token boolean">true</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+	<span class="token keyword">int</span> width<span class="token punctuation">,</span> height<span class="token punctuation">,</span> channels<span class="token punctuation">;</span>
+	<span class="token keyword">unsigned</span> <span class="token keyword">char</span><span class="token operator">*</span> data <span class="token operator">=</span> <span class="token function">stbi_load</span><span class="token punctuation">(</span>path<span class="token punctuation">,</span> <span class="token operator">&amp;</span>width<span class="token punctuation">,</span> <span class="token operator">&amp;</span>height<span class="token punctuation">,</span> <span class="token operator">&amp;</span>channels<span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+	<span class="token keyword">if</span> <span class="token punctuation">(</span>data<span class="token punctuation">)</span>
+	<span class="token punctuation">&#123;</span>
+		<span class="token function">glTexImage2D</span><span class="token punctuation">(</span>GL_TEXTURE_2D<span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> GL_RGB<span class="token punctuation">,</span> width<span class="token punctuation">,</span> height<span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> GL_RGB<span class="token punctuation">,</span> GL_UNSIGNED_BYTE<span class="token punctuation">,</span> data<span class="token punctuation">)</span><span class="token punctuation">;</span>
+		<span class="token function">glGenerateMipmap</span><span class="token punctuation">(</span>GL_TEXTURE_2D<span class="token punctuation">)</span><span class="token punctuation">;</span>
+		<span class="token function">stbi_image_free</span><span class="token punctuation">(</span>data<span class="token punctuation">)</span><span class="token punctuation">;</span>
+		<span class="token keyword">return</span> texture<span class="token punctuation">;</span>
+	<span class="token punctuation">&#125;</span>
+	<span class="token keyword">else</span>
+	<span class="token punctuation">&#123;</span>
+		<span class="token function">stbi_image_free</span><span class="token punctuation">(</span>data<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">ifdef</span> <span class="token expression">USE_LOG</span></span>
+		<span class="token function">m_log</span><span class="token punctuation">(</span><span class="token string">"Failed to load texture!"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">endif</span> </span>
+		<span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
+	<span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<blockquote>
+<p>OpenGL要求 y 轴 0 坐标在图片底部，但图片 y 轴 0 坐标通常在顶部，因此要翻转 y 轴：</p>
+<pre class="line-numbers language-cpp" data-language="cpp"><code class="language-cpp"><span class="token function">stbi_set_flip_vertically_on_load</span><span class="token punctuation">(</span><span class="token boolean">true</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p><code>glTexImage2D</code> 函数：</p>
+<ul>
+<li>param1：纹理目标，<strong>GL_TEXTURE_2D</strong>。</li>
+<li>param2：多级渐远纹理的级别，0 是基本级别。</li>
+<li>param3：图像只有<code>RGB</code>值，把纹理储存为<code>RGB</code>值，<strong>GL_RGB</strong>。</li>
+<li>param4：纹理宽度。</li>
+<li>param5：纹理高度。</li>
+<li>param6：总是 0，历史遗留的问题。</li>
+<li>param7：源图格式，<strong>GL_RGB</strong>。</li>
+<li>param8：数据类型，<strong>GL_UNSIGNED_BYTE</strong>。</li>
+<li>param9：图像数据。</li>
+</ul>
+<p>生成纹理之后调用<code>glGenerateMipmap</code>，为当前绑定的纹理自动生成所有需要的多级渐远纹理。</p>
+</blockquote>
+<p>顶点数据中增加纹理坐标信息。</p>
+<pre class="line-numbers language-cpp" data-language="cpp"><code class="language-cpp">GLfloat vertices<span class="token punctuation">[</span><span class="token punctuation">]</span> <span class="token operator">=</span> 
+<span class="token punctuation">&#123;</span>
+	<span class="token comment">//   位置    				颜色			    	纹理坐标</span>
+		 <span class="token number">0.5f</span><span class="token punctuation">,</span>  <span class="token number">0.5f</span><span class="token punctuation">,</span> <span class="token number">0.0f</span><span class="token punctuation">,</span>   <span class="token number">1.0f</span><span class="token punctuation">,</span> <span class="token number">0.0f</span><span class="token punctuation">,</span> <span class="token number">0.0f</span><span class="token punctuation">,</span>   <span class="token number">1.0f</span><span class="token punctuation">,</span> <span class="token number">1.0f</span><span class="token punctuation">,</span>   <span class="token comment">// 右上</span>
+		 <span class="token number">0.5f</span><span class="token punctuation">,</span> <span class="token operator">-</span><span class="token number">0.5f</span><span class="token punctuation">,</span> <span class="token number">0.0f</span><span class="token punctuation">,</span>   <span class="token number">0.0f</span><span class="token punctuation">,</span> <span class="token number">1.0f</span><span class="token punctuation">,</span> <span class="token number">0.0f</span><span class="token punctuation">,</span>   <span class="token number">1.0f</span><span class="token punctuation">,</span> <span class="token number">0.0f</span><span class="token punctuation">,</span>   <span class="token comment">// 右下</span>
+		<span class="token operator">-</span><span class="token number">0.5f</span><span class="token punctuation">,</span> <span class="token operator">-</span><span class="token number">0.5f</span><span class="token punctuation">,</span> <span class="token number">0.0f</span><span class="token punctuation">,</span>   <span class="token number">0.0f</span><span class="token punctuation">,</span> <span class="token number">0.0f</span><span class="token punctuation">,</span> <span class="token number">1.0f</span><span class="token punctuation">,</span>   <span class="token number">0.0f</span><span class="token punctuation">,</span> <span class="token number">0.0f</span><span class="token punctuation">,</span>   <span class="token comment">// 左下</span>
+		<span class="token operator">-</span><span class="token number">0.5f</span><span class="token punctuation">,</span>  <span class="token number">0.5f</span><span class="token punctuation">,</span> <span class="token number">0.0f</span><span class="token punctuation">,</span>   <span class="token number">1.0f</span><span class="token punctuation">,</span> <span class="token number">1.0f</span><span class="token punctuation">,</span> <span class="token number">0.0f</span><span class="token punctuation">,</span>   <span class="token number">0.0f</span><span class="token punctuation">,</span> <span class="token number">1.0f</span>    <span class="token comment">// 左上</span>
+<span class="token punctuation">&#125;</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>在顶点着色器中接受纹理坐标，再传送给片段着色器。</p>
+<pre class="line-numbers language-cpp" data-language="cpp"><code class="language-cpp"><span class="token keyword">unsigned</span> texture <span class="token operator">=</span> <span class="token function">m_load_img2D</span><span class="token punctuation">(</span><span class="token string">"asset/rika.jpg"</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<pre class="line-numbers language-cpp" data-language="cpp"><code class="language-cpp"><span class="token function">glVertexAttribPointer</span><span class="token punctuation">(</span><span class="token number">2</span><span class="token punctuation">,</span> <span class="token number">2</span><span class="token punctuation">,</span> GL_FLOAT<span class="token punctuation">,</span> GL_FALSE<span class="token punctuation">,</span> <span class="token number">8</span> <span class="token operator">*</span> <span class="token keyword">sizeof</span><span class="token punctuation">(</span><span class="token keyword">float</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token keyword">void</span><span class="token operator">*</span><span class="token punctuation">)</span><span class="token punctuation">(</span><span class="token number">6</span> <span class="token operator">*</span> <span class="token keyword">sizeof</span><span class="token punctuation">(</span><span class="token keyword">float</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token function">glEnableVertexAttribArray</span><span class="token punctuation">(</span><span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<pre class="line-numbers language-glsl" data-language="glsl"><code class="language-glsl"><span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">version</span> <span class="token expression"><span class="token number">330</span> core</span></span>
+<span class="token keyword">layout</span> <span class="token punctuation">(</span>location <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token keyword">in</span> <span class="token keyword">vec3</span> aPos<span class="token punctuation">;</span>
+<span class="token keyword">layout</span> <span class="token punctuation">(</span>location <span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">)</span> <span class="token keyword">in</span> <span class="token keyword">vec3</span> aColor<span class="token punctuation">;</span>
+<span class="token keyword">layout</span> <span class="token punctuation">(</span>location <span class="token operator">=</span> <span class="token number">2</span><span class="token punctuation">)</span> <span class="token keyword">in</span> <span class="token keyword">vec2</span> aTexCoord<span class="token punctuation">;</span>
+
+<span class="token keyword">out</span> <span class="token keyword">vec3</span> ourColor<span class="token punctuation">;</span>
+<span class="token keyword">out</span> <span class="token keyword">vec2</span> TexCoord<span class="token punctuation">;</span>
+
+<span class="token keyword">void</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#123;</span>
+    gl_Position <span class="token operator">=</span> <span class="token keyword">vec4</span><span class="token punctuation">(</span>aPos<span class="token punctuation">,</span> <span class="token number">1.0</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    ourColor <span class="token operator">=</span> aColor<span class="token punctuation">;</span>
+    TexCoord <span class="token operator">=</span> aTexCoord<span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>GLSL 有一个供纹理对象使用的内建数据类型采样器(Sampler)，以纹理类型作为后缀。</p>
+<p><code>uniform sampler2D</code>把一个纹理添加到片段着色器中。</p>
+<pre class="line-numbers language-glsl" data-language="glsl"><code class="language-glsl"><span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">version</span> <span class="token expression"><span class="token number">330</span> core</span></span>
+<span class="token keyword">out</span> <span class="token keyword">vec4</span> FragColor<span class="token punctuation">;</span>
+
+<span class="token keyword">in</span> <span class="token keyword">vec3</span> ourColor<span class="token punctuation">;</span>
+<span class="token keyword">in</span> <span class="token keyword">vec2</span> TexCoord<span class="token punctuation">;</span>
+
+<span class="token keyword">uniform</span> <span class="token keyword">sampler2D</span> ourTexture<span class="token punctuation">;</span>
+
+<span class="token keyword">void</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#123;</span>
+    FragColor <span class="token operator">=</span> <span class="token function">texture</span><span class="token punctuation">(</span>ourTexture<span class="token punctuation">,</span> TexCoord<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token comment">//FragColor = texture(ourTexture, TexCoord) * vec4(ourColor, 1.0);</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>在调用 glDrawElements 之前绑定纹理，会自动把纹理赋值给片段着色器的采样器。</p>
+<pre class="line-numbers language-cpp" data-language="cpp"><code class="language-cpp"><span class="token function">glBindTexture</span><span class="token punctuation">(</span>GL_TEXTURE_2D<span class="token punctuation">,</span> texture<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token function">glBindVertexArray</span><span class="token punctuation">(</span>VAO<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token function">glDrawElements</span><span class="token punctuation">(</span>GL_TRIANGLES<span class="token punctuation">,</span> <span class="token number">6</span><span class="token punctuation">,</span> GL_UNSIGNED_INT<span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+<p><strong>纹理单元</strong></p>
+<p>一个纹理的位置值称为一个纹理单元(Texture Unit)，默认激活纹理单元是 0。</p>
+<p>把纹理单元赋值给采样器，可以一次绑定多个纹理，使用<code>glActiveTexture</code>激活纹理单元，再绑定纹理单元。</p>
+<pre class="line-numbers language-cpp" data-language="cpp"><code class="language-cpp"><span class="token function">glActiveTexture</span><span class="token punctuation">(</span>GL_TEXTURE0<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token function">glBindTexture</span><span class="token punctuation">(</span>GL_TEXTURE_2D<span class="token punctuation">,</span> texture<span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<blockquote>
+<p><strong>GL_TEXTURE0</strong> 默认被激活，使用<code>glBindTexture</code>时，无需激活任何纹理单元。</p>
+<p>OpenGL 至少保证有 16 个纹理单元，从 <strong>GL_TEXTURE0</strong> 到 <strong>GL_TEXTRUE15</strong>，按顺序增加的。</p>
+</blockquote>
+<pre class="line-numbers language-cpp" data-language="cpp"><code class="language-cpp"><span class="token comment">// ...</span>
+<span class="token keyword">unsigned</span> texture1 <span class="token operator">=</span> <span class="token function">m_load_img2D</span><span class="token punctuation">(</span><span class="token string">"asset/1.png"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">unsigned</span> texture2 <span class="token operator">=</span> <span class="token function">m_load_img2D</span><span class="token punctuation">(</span><span class="token string">"asset/2.jpg"</span>
+                                 
+m_shader <span class="token function">shader</span><span class="token punctuation">(</span><span class="token string">"shader/v.vert"</span><span class="token punctuation">,</span> <span class="token string">"shader/f.frag"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+shader<span class="token punctuation">.</span><span class="token function">active</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+shader<span class="token punctuation">.</span><span class="token function">setInt</span><span class="token punctuation">(</span><span class="token string">"texture1"</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+shader<span class="token punctuation">.</span><span class="token function">setInt</span><span class="token punctuation">(</span><span class="token string">"texture2"</span><span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+              
+<span class="token keyword">while</span> <span class="token punctuation">(</span><span class="token operator">!</span><span class="token function">glfwWindowShouldClose</span><span class="token punctuation">(</span><span class="token operator">*</span>mw<span class="token punctuation">)</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#123;</span>
+	<span class="token comment">// ...</span>
+    <span class="token function">glActiveTexture</span><span class="token punctuation">(</span>GL_TEXTURE0<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">glBindTexture</span><span class="token punctuation">(</span>GL_TEXTURE_2D<span class="token punctuation">,</span> texture1<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">glActiveTexture</span><span class="token punctuation">(</span>GL_TEXTURE1<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">glBindTexture</span><span class="token punctuation">(</span>GL_TEXTURE_2D<span class="token punctuation">,</span> texture2
+                  
+    shader<span class="token punctuation">.</span><span class="token function">active</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">glBindVertexArray</span><span class="token punctuation">(</span>VAO<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">glDrawElements</span><span class="token punctuation">(</span>GL_TRIANGLES<span class="token punctuation">,</span> <span class="token number">6</span><span class="token punctuation">,</span> GL_UNSIGNED_INT<span class="token punctuation">,</span> <span class="token number">0</span>
+	<span class="token comment">// ...</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<blockquote>
+<p>setInt 函数是一个简单的封装：</p>
+<pre class="line-numbers language-cpp" data-language="cpp"><code class="language-cpp"><span class="token keyword">void</span> <span class="token function">setInt</span><span class="token punctuation">(</span><span class="token keyword">const</span> <span class="token keyword">char</span><span class="token operator">*</span> name<span class="token punctuation">,</span> <span class="token keyword">int</span> val<span class="token punctuation">)</span>
+<span class="token punctuation">&#123;</span>
+    <span class="token function">glUniform1i</span><span class="token punctuation">(</span><span class="token function">glGetUniformLocation</span><span class="token punctuation">(</span>_ID<span class="token punctuation">,</span> name<span class="token punctuation">)</span><span class="token punctuation">,</span> val<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+</blockquote>
+<pre class="line-numbers language-glsl" data-language="glsl"><code class="language-glsl"><span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">version</span> <span class="token expression"><span class="token number">330</span> core</span></span>
+<span class="token keyword">out</span> <span class="token keyword">vec4</span> FragColor<span class="token punctuation">;</span>
+
+<span class="token keyword">in</span> <span class="token keyword">vec3</span> ourColor<span class="token punctuation">;</span>
+<span class="token keyword">in</span> <span class="token keyword">vec2</span> TexCoord<span class="token punctuation">;</span>
+
+<span class="token keyword">uniform</span> <span class="token keyword">sampler2D</span> texture1<span class="token punctuation">;</span>
+<span class="token keyword">uniform</span> <span class="token keyword">sampler2D</span> texture2<span class="token punctuation">;</span>
+
+<span class="token keyword">void</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#123;</span>
+    FragColor <span class="token operator">=</span> <span class="token function">mix</span><span class="token punctuation">(</span><span class="token function">texture</span><span class="token punctuation">(</span>texture1<span class="token punctuation">,</span> TexCoord<span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token function">texture</span><span class="token punctuation">(</span>texture2<span class="token punctuation">,</span> TexCoord<span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token number">0.5</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p><img src="https://raw.githubusercontent.com/morisa66/BlogImgs/master/opengl/1/out2.PNG" alt="out2" style="zoom:50%;" / loading="lazy"></p>
+<h2 id="z-buffer">Z-Buffer</h2>
+<p>OpenGL 存储深度信息在一个Z缓冲(Z-buffer)/深度缓冲(Depth Buffer)中，深度值存储在每个片段里面的 z 值里面。当片段想要输出它的颜色时，OpenGL会将它的深度值和 z 缓冲进行比较，如果当前的片段在其它片段之后，它将会被丢弃，否则将会覆盖。这个过程称为深度测试(Depth Testing)，它是由OpenGL自动完成的。</p>
+<p>深度测试默认是关闭的。可以通过 <code>glEnable</code> 函数来开启深度测试。</p>
+<pre class="line-numbers language-cpp" data-language="cpp"><code class="language-cpp"><span class="token function">glEnable</span><span class="token punctuation">(</span>GL_DEPTH_TEST<span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>当使用深度测试，在每次渲染迭代前清除深度缓冲（否则前一帧深度信息仍保存在缓冲中），<code>glClear</code>函数指定<code>DEPTH_BUFFER_BIT</code>位清除深度缓冲.</p>
+<pre class="line-numbers language-cpp" data-language="cpp"><code class="language-cpp"><span class="token function">glClear</span><span class="token punctuation">(</span>GL_COLOR_BUFFER_BIT <span class="token operator">|</span> GL_DEPTH_BUFFER_BIT<span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<blockquote>
+<p><code>glEnable</code> 和 <code>glDisable</code> 函数启用/禁用某个OpenGL功能，一直保持直到另一个调用来禁用/启用。</p>
+</blockquote>
+<h1 id="坐标系统">坐标系统</h1>
+<h2 id="glm">GLM</h2>
+<p>GLM（OpenGL Mathematics）是一个头文件库，不用链接和编译，从<a target="_blank" rel="noopener" href="https://github.com/g-truc/glm">这里</a>下载，然后添加进项目即可。</p>
+<blockquote>
+<ul>
+<li>GLM 库从0.9.9版本起，默认会将矩阵类型初始化为一个零矩阵。</li>
+<li>GLM 角度是弧度制的(Radian)，使用<code>glm::radians</code>将角度转化为弧度。</li>
+</ul>
+</blockquote>
+<p>GLM 大多数功能在下面的头文件中。</p>
+<pre class="line-numbers language-cpp" data-language="cpp"><code class="language-cpp"><span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span> <span class="token string">&lt;glm/glm.hpp></span></span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span> <span class="token string">&lt;glm/gtc/matrix_transform.hpp></span></span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span> <span class="token string">&lt;glm/gtc/type_ptr.hpp></span></span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+<p>把变换矩阵传发送着色器的方法。</p>
+<pre class="line-numbers language-cpp" data-language="cpp"><code class="language-cpp"><span class="token keyword">unsigned</span> <span class="token keyword">int</span> transformLoc <span class="token operator">=</span> <span class="token function">glGetUniformLocation</span><span class="token punctuation">(</span>ourShader<span class="token punctuation">.</span>ID<span class="token punctuation">,</span> <span class="token string">"transform"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token function">glUniformMatrix4fv</span><span class="token punctuation">(</span>transformLoc<span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">,</span> GL_FALSE<span class="token punctuation">,</span> glm<span class="token operator">::</span><span class="token function">value_ptr</span><span class="token punctuation">(</span>trans<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<blockquote>
+<ul>
+<li>param1：uniform 位置值。</li>
+<li>param2：发送矩阵数量。</li>
+<li>param3：是否进行矩阵转置，OpenGL 默认列主序，不需要转置。</li>
+<li>param4：矩阵数据，需要 <code>glm::value_ptr</code>来转变。</li>
+</ul>
+</blockquote>
+<h2 id="坐标变换">坐标变换</h2>
+<p><img src="https://raw.githubusercontent.com/morisa66/BlogImgs/master/opengl/1/coordinate_systems.png" / loading="lazy"></p>
+<ul>
+<li>局部坐标(Local Coordinate)：物体相对于局部原点的坐标，即物体起始坐标。</li>
+<li>世界坐标(World Coordinate)：物体会和其它物体一起相对于世界的原点进行摆放。</li>
+<li>观察坐标(View Coordinate)：每个坐标都是从摄像机（观察者）的角度进行观察的坐标。</li>
+<li>裁剪坐标(Clip Coordinate)：坐标被处理至<code>[-1, 1]</code>的范围内，判断哪些顶点会出现在屏幕上。</li>
+<li>屏幕坐标(Screen Coordinate)：经过视口变换(Viewport Transform)，将<code>[-1, 1]</code>范围的坐标变换到由<code>glViewport</code>函数所定义的坐标范围内。变换的坐标会送到光栅器，转化为片段。</li>
+</ul>
+<h2 id="投影">投影</h2>
+<p><strong>正视投影</strong>定义一个裁剪空间，空间之外的顶点都会被裁剪掉，类似下面的平截头体。</p>
+<p><img src="https://raw.githubusercontent.com/morisa66/BlogImgs/master/opengl/1/orthographic_frustum.png" / loading="lazy"></p>
+<p>用 GLM 的内置函数<code>glm::ortho</code>创建一个正视投影矩阵。</p>
+<pre class="line-numbers language-cpp" data-language="cpp"><code class="language-cpp">glm<span class="token operator">::</span><span class="token function">ortho</span><span class="token punctuation">(</span><span class="token number">0.0f</span><span class="token punctuation">,</span> <span class="token number">800.0f</span><span class="token punctuation">,</span> <span class="token number">0.0f</span><span class="token punctuation">,</span> <span class="token number">600.0f</span><span class="token punctuation">,</span> <span class="token number">0.1f</span><span class="token punctuation">,</span> <span class="token number">100.0f</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<blockquote>
+<ul>
+<li>param1、2：平截头体的左右坐标。</li>
+<li>param3、4：平截头体的底部和顶部。</li>
+<li>param5、6：近平面和远平面的距离。</li>
+</ul>
+</blockquote>
+<p><strong>透视投影</strong>将给定的平截头体范围映射到裁剪空间，修改顶点坐标 w 值，使离观察者越远的顶点坐标 w 分量越大。</p>
+<p>OpenGL要求所有可见的坐标在[-1, 1] 范围内，作为顶点着色器的输出。坐标在裁剪空间内之后，透视除法就会被应用到裁剪空间坐标上：(距离观察者越远顶点坐标就会越小)。 <span class="math display">\[
+out = \begin{pmatrix} x /w \\ y / w \\ z / w \end{pmatrix}
+\]</span> 创建一个定义了可视空间的大<strong>平截头体</strong>，在这个平截头体外的东西不会出现在裁剪空间内，会受到裁剪。</p>
+<p><img src="https://raw.githubusercontent.com/morisa66/BlogImgs/master/opengl/1/perspective_frustum.png" / loading="lazy"></p>
+<p>用 GLM 的内置函数<code>glm::perspective</code>创建一个透视投影矩阵。</p>
+<pre class="line-numbers language-cpp" data-language="cpp"><code class="language-cpp">glm<span class="token operator">::</span><span class="token function">perspective</span><span class="token punctuation">(</span>glm<span class="token operator">::</span><span class="token function">radians</span><span class="token punctuation">(</span><span class="token number">45.0f</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token keyword">float</span><span class="token punctuation">)</span>width<span class="token operator">/</span><span class="token punctuation">(</span><span class="token keyword">float</span><span class="token punctuation">)</span>height<span class="token punctuation">,</span> <span class="token number">0.1f</span><span class="token punctuation">,</span> <span class="token number">100.0f</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<blockquote>
+<ul>
+<li>param1：fov（Field of View）。</li>
+<li>param2：宽高比，视口宽除以高。</li>
+<li>param3、4：平截头体的近平面和远平面。</li>
+</ul>
+</blockquote>
+<h2 id="mvp">MVP</h2>
+<p>顶点坐标<span class="math inline">\((Local:V_L)\)</span>通过左乘：</p>
+<ul>
+<li>模型矩阵<span class="math inline">\((Model:M)\)</span>：位移、缩放与旋转操作</li>
+<li>观察矩阵<span class="math inline">\((View:V)\)</span>：摄像机观察矩阵</li>
+<li>投影矩阵<span class="math inline">\((Projection:P)\)</span>：透视投影矩阵</li>
+</ul>
+<p>变换到裁剪坐标<span class="math inline">\((Clip:V_C)\)</span>。 <span class="math display">\[
+V_C = P \cdot V \cdot M \cdot V_L
+\]</span></p>
+<blockquote>
+<p>矩阵运算的顺序是从右往左。</p>
+</blockquote>
+<p>顶点着色器输出要求所有顶点都在裁剪空间内，这是变换矩阵所做的。</p>
+<p>OpenGL对<strong>裁剪坐标</strong>执行<strong>透视除法</strong>从而将它们变换到<strong>标准化设备坐标</strong>，会使用<code>glViewPort</code>内部的参数来将标准化设备坐标映射到<strong>屏幕坐标</strong>，每个坐标都关联了一个屏幕上的点，这个过程称为视口变换。</p>
+<h2 id="摄像机">摄像机</h2>
+<p>定义摄像机的条件：</p>
+<ul>
+<li><p>摄像机在世界空间中的位置：</p>
+<pre class="line-numbers language-cpp" data-language="cpp"><code class="language-cpp">glm<span class="token operator">::</span>vec3 cameraPos <span class="token operator">=</span> glm<span class="token operator">::</span><span class="token function">vec3</span><span class="token punctuation">(</span><span class="token number">0.0f</span><span class="token punctuation">,</span> <span class="token number">0.0f</span><span class="token punctuation">,</span> <span class="token number">2.0f</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre></li>
+<li><p>观察方向（+z）：指摄像机指向的方向，这里让摄像机指向场景原点。</p>
+<pre class="line-numbers language-cpp" data-language="cpp"><code class="language-cpp">glm<span class="token operator">::</span>vec3 cameraDirection <span class="token operator">=</span> glm<span class="token operator">::</span><span class="token function">normalize</span><span class="token punctuation">(</span>cameraPos <span class="token operator">-</span> glm<span class="token operator">::</span><span class="token function">vec3</span><span class="token punctuation">(</span><span class="token number">0.0f</span><span class="token punctuation">,</span> <span class="token number">0.0f</span><span class="token punctuation">,</span> <span class="token number">0.0f</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<blockquote>
+<p>OpenGL 是右手系，+z 轴指向屏幕外，摄像机方向是 -z 轴，摄像机向后移动，要沿着 +z 轴移动。</p>
+</blockquote></li>
+<li><p>指向它右方的向量（+x）：</p>
+<pre class="line-numbers language-cpp" data-language="cpp"><code class="language-cpp">glm<span class="token operator">::</span>vec3 up <span class="token operator">=</span> glm<span class="token operator">::</span><span class="token function">vec3</span><span class="token punctuation">(</span><span class="token number">0.0f</span><span class="token punctuation">,</span> <span class="token number">1.0f</span><span class="token punctuation">,</span> <span class="token number">0.0f</span><span class="token punctuation">)</span><span class="token punctuation">;</span> 
+glm<span class="token operator">::</span>vec3 cameraRight <span class="token operator">=</span> glm<span class="token operator">::</span><span class="token function">normalize</span><span class="token punctuation">(</span>glm<span class="token operator">::</span><span class="token function">cross</span><span class="token punctuation">(</span>up<span class="token punctuation">,</span> cameraDirection<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre></li>
+<li><p>指向它上方的向量（+y = +z × +x）：</p>
+<pre class="line-numbers language-cpp" data-language="cpp"><code class="language-cpp">glm<span class="token operator">::</span>vec3 cameraUp <span class="token operator">=</span> glm<span class="token operator">::</span><span class="token function">normalize</span><span class="token punctuation">(</span>glm<span class="token operator">::</span><span class="token function">cross</span><span class="token punctuation">(</span>cameraDirection<span class="token punctuation">,</span> cameraRight<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre></li>
+</ul>
+<p>本质上创建了一个三个单位轴相互垂直的、以摄像机的位置为原点的坐标系。</p>
+<p><img src="https://raw.githubusercontent.com/morisa66/BlogImgs/master/opengl/1/camera_axes.png" / loading="lazy"></p>
+<p><strong>LookAt</strong> 矩阵：看着给定目标的观察矩阵（<strong>R</strong> 是右向量，<strong>U</strong> 是上向量，<strong>D</strong> 是方向向量，<strong>P</strong> 是摄像机位置向量）。 <span class="math display">\[
+LookAt = \begin{bmatrix} \color{red}{R_x} &amp; \color{red}{R_y} &amp; \color{red}{R_z} &amp; 0 \\ \color{green}{U_x} &amp; \color{green}{U_y} &amp; \color{green}{U_z} &amp; 0 \\ \color{blue}{D_x} &amp; \color{blue}{D_y} &amp; \color{blue}{D_z} &amp; 0 \\ 0 &amp; 0 &amp; 0  &amp; 1 \end{bmatrix} * \begin{bmatrix} 1 &amp; 0 &amp; 0 &amp; -\color{purple}{P_x} \\ 0 &amp; 1 &amp; 0 &amp; -\color{purple}{P_y} \\ 0 &amp; 0 &amp; 1 &amp; -\color{purple}{P_z} \\ 0 &amp; 0 &amp; 0  &amp; 1 \end{bmatrix}
+\]</span></p>
+<blockquote>
+<p>位置向量是相反的，我们希望把世界平移到与我们自身移动的相反方向。</p>
+</blockquote>
+<pre class="line-numbers language-cpp" data-language="cpp"><code class="language-cpp">glm<span class="token operator">::</span>mat4 view <span class="token operator">=</span> glm<span class="token operator">::</span><span class="token function">lookAt</span><span class="token punctuation">(</span>glm<span class="token operator">::</span><span class="token function">vec3</span><span class="token punctuation">(</span><span class="token number">0.0f</span><span class="token punctuation">,</span> <span class="token number">0.0f</span><span class="token punctuation">,</span> <span class="token number">3.0f</span><span class="token punctuation">)</span><span class="token punctuation">,</span> 	<span class="token comment">// 摄像机位置</span>
+                             glm<span class="token operator">::</span><span class="token function">vec3</span><span class="token punctuation">(</span><span class="token number">0.0f</span><span class="token punctuation">,</span> <span class="token number">0.0f</span><span class="token punctuation">,</span> <span class="token number">0.0f</span><span class="token punctuation">)</span><span class="token punctuation">,</span>  	<span class="token comment">// 目标位置			</span>
+                             glm<span class="token operator">::</span><span class="token function">vec3</span><span class="token punctuation">(</span><span class="token number">0.0f</span><span class="token punctuation">,</span> <span class="token number">1.0f</span><span class="token punctuation">,</span> <span class="token number">0.0f</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span> 	<span class="token comment">// 世界空间中的上方向量</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+<h2 id="欧拉角">欧拉角</h2>
+<p>俯仰角(pitch:x)、偏航角(yaw:y)、滚转角(roll:z)。</p>
+<p><img src="https://raw.githubusercontent.com/morisa66/BlogImgs/master/opengl/1/camera_pitch_yaw_roll.png" / loading="lazy"></p>
+<p>这里用 pitch 和 yaw 来模拟（一般摄像机不会进行 roll ）。</p>
+<p>pitch 影响 xyz 分量，yaw 影响 xz 分量。</p>
+<p><img src="https://raw.githubusercontent.com/morisa66/BlogImgs/master/opengl/1/camera_py.png" / loading="lazy"></p>
+<pre class="line-numbers language-cpp" data-language="cpp"><code class="language-cpp"><span class="token comment">// direction指摄像机前方</span>
+direction<span class="token punctuation">.</span>x <span class="token operator">=</span> <span class="token function">cos</span><span class="token punctuation">(</span>glm<span class="token operator">::</span><span class="token function">radians</span><span class="token punctuation">(</span>pitch<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">*</span> <span class="token function">cos</span><span class="token punctuation">(</span>glm<span class="token operator">::</span><span class="token function">radians</span><span class="token punctuation">(</span>yaw<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span> 
+direction<span class="token punctuation">.</span>y <span class="token operator">=</span> <span class="token function">sin</span><span class="token punctuation">(</span>glm<span class="token operator">::</span><span class="token function">radians</span><span class="token punctuation">(</span>pitch<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+direction<span class="token punctuation">.</span>z <span class="token operator">=</span> <span class="token function">cos</span><span class="token punctuation">(</span>glm<span class="token operator">::</span><span class="token function">radians</span><span class="token punctuation">(</span>pitch<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">*</span> <span class="token function">sin</span><span class="token punctuation">(</span>glm<span class="token operator">::</span><span class="token function">radians</span><span class="token punctuation">(</span>yaw<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+<p><a target="_blank" rel="noopener" href="https://github.com/morisa66/OpenGL_Demo/tree/master/demo1/src">这里</a>实现了一个简单的 DEMO。</p>
+</div><div id="reward-container"><span class="hty-icon-button button-glow" id="reward-button" title="打赏" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === &quot;none&quot;) ? &quot;block&quot; : &quot;none&quot;;"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-hand-coin-line"></use></svg></span><div id="reward-comment">If it is useful, and you would like to help me, please Money🤡Money🤡Money🤡!</div><div id="qr" style="display:none;"><div style="display:inline-block"><a href="/imgs/pay/zfb.jpg"><img loading="lazy" src="/imgs/pay/zfb.jpg" alt="支付宝" title="支付宝"></a><div><span style="color:#00A3EE"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-alipay-line"></use></svg></span></div></div><div style="display:inline-block"><a href="/imgs/pay/wx.png"><img loading="lazy" src="/imgs/pay/wx.png" alt="微信支付" title="微信支付"></a><div><span style="color:#2DC100"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-wechat-pay-line"></use></svg></span></div></div></div></div><ul class="post-copyright"><li class="post-copyright-author"><strong>本文作者：</strong>morisa</li><li class="post-copyright-link"><strong>本文链接：</strong><a href="https://morisa66.github.io/2021/01/22/OpenGL1/" title="OpenGL 1">https://morisa66.github.io/2021/01/22/OpenGL1/</a></li><li class="post-copyright-license"><strong>版权声明：</strong>本博客所有文章除特别声明外，均默认采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" target="_blank" rel="noopener" title="CC BY-NC-SA 4.0 "><svg class="icon"><use xlink:href="#icon-creative-commons-line"></use></svg><svg class="icon"><use xlink:href="#icon-creative-commons-by-line"></use></svg><svg class="icon"><use xlink:href="#icon-creative-commons-nc-line"></use></svg><svg class="icon"><use xlink:href="#icon-creative-commons-sa-line"></use></svg></a> 许可协议。</li></ul></section></article><div class="post-nav"><div class="post-nav-item"><a class="post-nav-prev" href="/2021/02/12/Concurrency/" rel="prev" title="并发Concurrency"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-arrow-left-s-line"></use></svg><span class="post-nav-text">并发Concurrency</span></a></div><div class="post-nav-item"><a class="post-nav-next" href="/2021/01/19/Algorithm_backpack/" rel="next" title="背包问题"><span class="post-nav-text">背包问题</span><svg class="icon" aria-hidden="true"><use xlink:href="#icon-arrow-right-s-line"></use></svg></a></div></div></div></main><footer class="sidebar-translate" id="footer"><div class="copyright"><span>&copy; 2019 – 2021 </span><span class="with-love" id="animate"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-cloud-line"></use></svg></span><span class="author"> morisa</span></div><div class="powered"><span>由 <a href="https://hexo.io" target="_blank" rel="noopener">Hexo</a> 驱动 v5.4.0</span><span class="footer-separator">|</span><span>主题 - <a rel="noopener" href="https://github.com/YunYouJun/hexo-theme-yun" target="_blank"><span>Yun</span></a> v1.5.1</span></div></footer><a class="hty-icon-button" id="goUp" aria-label="back-to-top" href="#"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-arrow-up-s-line"></use></svg><svg class="progress-circle-container" viewBox="0 0 100 100"><circle class="progress-circle" id="progressCircle" cx="50" cy="50" r="48" fill="none" stroke="#0078E7" stroke-width="2" stroke-linecap="round"></circle></svg></a></div></body></html>
