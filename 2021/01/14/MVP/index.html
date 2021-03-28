@@ -1,0 +1,355 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="theme-color" content="#0078E7"><meta name="author" content="morisa"><meta name="copyright" content="morisa"><meta name="generator" content="Hexo 5.4.0"><meta name="theme" content="hexo-theme-yun"><title>MVP 矩阵公式推导 | Little Web</title><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@900&amp;display=swap" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/star-markdown-css@0.1.24/dist/yun/yun-markdown.min.css"><script src="//at.alicdn.com/t/font_1140697_ed8vp4atwoj.js" async></script><script src="https://cdn.jsdelivr.net/npm/scrollreveal/dist/scrollreveal.min.js" defer></script><script>document.addEventListener("DOMContentLoaded", () => {
+  [".post-card",".post-content img"].forEach((target)=> {
+    ScrollReveal().reveal(target);
+  })
+});
+</script><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.css"><script defer src="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.js"></script><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/katex@latest/dist/contrib/copy-tex.min.css"><script defer src="https://cdn.jsdelivr.net/npm/katex@latest/dist/contrib/copy-tex.min.js"></script><script defer src="https://cdn.jsdelivr.net/npm/katex@latest/dist/contrib/auto-render.min.js"></script><script>document.addEventListener("DOMContentLoaded", function() {
+  renderMathInElement(document.body, {
+    delimiters: [
+      {left: "$$", right: "$$", display: true},
+      {left: "$", right: "$", display: false},
+      {left: "\\(", right: "\\)", display: false},
+      {left: "\\[", right: "\\]", display: true}
+    ]
+  });
+});</script><link id="light-prism-css" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@latest/themes/prism.css" media="(prefers-color-scheme: light)"><link id="dark-prism-css" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@latest/themes/prism-tomorrow.css" media="(prefers-color-scheme: dark)"><link rel="shortcut icon" type="image/svg+xml" href="/yun.svg"><link rel="mask-icon" href="/yun.svg" color="#0078E7"><link rel="alternate icon" href="/yun.ico"><link rel="preload" href="/css/hexo-theme-yun.css" as="style"><link rel="preload" href="/js/utils.js" as="script"><link rel="preload" href="/js/hexo-theme-yun.js" as="script"><link rel="prefetch" href="/js/sidebar.js" as="script"><link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin><script id="yun-config">
+    const Yun = window.Yun || {};
+    window.CONFIG = {"hostname":"morisa66.github.io","root":"/","title":"难为君子|不做小人","version":"1.5.1","mode":"auto","copycode":true,"page":{"isPost":true},"i18n":{"placeholder":"搜索...","empty":"找不到您查询的内容: ${query}","hits":"找到 ${hits} 条结果","hits_time":"找到 ${hits} 条结果（用时 ${time} 毫秒）"},"anonymous_image":"https://cdn.jsdelivr.net/gh/YunYouJun/cdn/img/avatar/none.jpg","say":{"api":"https://v1.hitokoto.cn","hitokoto":true},"fireworks":{"colors":["102, 167, 221","62, 131, 225","33, 78, 194"]}};
+  </script><link rel="stylesheet" href="/css/hexo-theme-yun.css"><script src="/js/utils.js"></script><script src="/js/hexo-theme-yun.js"></script><meta name="description" content="MVP Matrix MVP 矩阵即 Model（模型）、View（观察）、Projection（投影）矩阵。 Model 模型矩阵描述的是 3D Point 的仿射变换，包含 Scale（缩放）、Rotate（旋转）、Translate（平移）。 可以按照下面的方式表示： \[ M &#x3D; Scale \times Rotate \times Translate \]   最后进行">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MVP 矩阵公式推导">
+<meta property="og:url" content="https://morisa66.github.io/2021/01/14/MVP/index.html">
+<meta property="og:site_name" content="Little Web">
+<meta property="og:description" content="MVP Matrix MVP 矩阵即 Model（模型）、View（观察）、Projection（投影）矩阵。 Model 模型矩阵描述的是 3D Point 的仿射变换，包含 Scale（缩放）、Rotate（旋转）、Translate（平移）。 可以按照下面的方式表示： \[ M &#x3D; Scale \times Rotate \times Translate \]   最后进行">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://raw.githubusercontent.com/morisa66/BlogImgs/master/opengl/MVP/1.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/morisa66/BlogImgs/master/opengl/MVP/2.png">
+<meta property="article:published_time" content="2021-01-14T09:49:41.000Z">
+<meta property="article:modified_time" content="2021-01-16T11:09:33.000Z">
+<meta property="article:author" content="morisa">
+<meta property="article:tag" content="数学">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/morisa66/BlogImgs/master/opengl/MVP/1.png"><script src="/js/ui/mode.js"></script></head><body><script defer src="https://cdn.jsdelivr.net/npm/animejs@latest"></script><script defer src="/js/ui/fireworks.js"></script><canvas class="fireworks"></canvas><div class="container"><a class="sidebar-toggle hty-icon-button" id="menu-btn"><div class="hamburger hamburger--spin" type="button"><span class="hamburger-box"><span class="hamburger-inner"></span></span></div></a><div class="sidebar-toggle sidebar-overlay"></div><aside class="sidebar"><script src="/js/sidebar.js"></script><ul class="sidebar-nav"><li class="sidebar-nav-item sidebar-nav-toc hty-icon-button sidebar-nav-active" data-target="post-toc-wrap" title="文章目录"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-list-ordered"></use></svg></li><li class="sidebar-nav-item sidebar-nav-overview hty-icon-button" data-target="site-overview-wrap" title="站点概览"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-passport-line"></use></svg></li></ul><div class="sidebar-panel" id="site-overview-wrap"><div class="site-info fix-top"><a class="site-author-avatar" href="/about/" title="morisa"><img width="96" loading="lazy" src="/imgs/avatar.jpg" alt="morisa"></a><div class="site-author-name"><a href="/about/">morisa</a></div><a class="site-name" href="/about/site.html">Little Web</a><sub class="site-subtitle"></sub><div class="site-desciption"></div></div><nav class="site-state"><a class="site-state-item hty-icon-button icon-home" href="/" title="首页"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-home-4-line"></use></svg></span></a><div class="site-state-item"><a href="/archives/" title="归档"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-archive-line"></use></svg></span><span class="site-state-item-count">28</span></a></div><div class="site-state-item"><a href="/categories/" title="分类"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-folder-2-line"></use></svg></span><span class="site-state-item-count">4</span></a></div><div class="site-state-item"><a href="/tags/" title="标签"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-price-tag-3-line"></use></svg></span><span class="site-state-item-count">15</span></a></div><a class="site-state-item hty-icon-button" target="_blank" rel="noopener" href="https://yun.yunyoujun.cn" title="文档"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-settings-line"></use></svg></span></a></nav><hr style="margin-bottom:0.5rem"><div class="links-of-author"><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://github.com/morisa66" title="GitHub" target="_blank" style="color:#6e5494"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-github-line"></use></svg></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://www.zhihu.com/people/morisa-48" title="知乎" target="_blank" style="color:#0084FF"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-zhihu-line"></use></svg></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://space.bilibili.com/289542802" title="B站" target="_blank" style="color:#FF8EB3"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-bilibili-line"></use></svg></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://twitter.com/morisa66" title="Twitter" target="_blank" style="color:#1da1f2"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-twitter-line"></use></svg></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="morisa66@outlook.com" title="E-Mail" target="_blank" style="color:#8E71C1"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-mail-line"></use></svg></a></div><br><a class="links-item hty-icon-button" id="toggle-mode-btn" href="javascript:;" title="Mode" style="color: #f1cb64"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-contrast-2-line"></use></svg></a></div><div class="sidebar-panel sidebar-panel-active" id="post-toc-wrap"><div class="post-toc"><div class="post-toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#mvp-matrix"><span class="toc-number">1.</span> <span class="toc-text">MVP Matrix</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#model"><span class="toc-number">1.1.</span> <span class="toc-text">Model</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#view"><span class="toc-number">1.2.</span> <span class="toc-text">View</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#projection"><span class="toc-number">1.3.</span> <span class="toc-text">Projection</span></a></li></ol></li></ol></div></div></div></aside><main class="sidebar-translate" id="content"><div id="post"><article class="hty-card post-block" itemscope itemtype="https://schema.org/Article"><link itemprop="mainEntityOfPage" href="https://morisa66.github.io/2021/01/14/MVP/"><span hidden itemprop="author" itemscope itemtype="https://schema.org/Person"><meta itemprop="name" content="morisa"><meta itemprop="description"></span><span hidden itemprop="publisher" itemscope itemtype="https://schema.org/Organization"><meta itemprop="name" content="Little Web"></span><header class="post-header"><h1 class="post-title" itemprop="name headline">MVP 矩阵公式推导</h1><div class="post-meta"><div class="post-time" style="display:inline-block"><span class="post-meta-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-calendar-line"></use></svg></span> <time title="创建时间：2021-01-14 17:49:41" itemprop="dateCreated datePublished" datetime="2021-01-14T17:49:41+08:00">2021-01-14</time><span class="post-meta-divider">-</span><span class="post-meta-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-calendar-2-line"></use></svg></span> <time title="修改时间：2021-01-16 19:09:33" itemprop="dateModified" datetime="2021-01-16T19:09:33+08:00">2021-01-16</time></div><div class="post-classify"><span class="post-category"> <span class="post-meta-item-icon" style="margin-right:3px;"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-folder-line"></use></svg></span><span itemprop="about" itemscope itemtype="https://schema.org/Thing"><a class="category" href="/categories/Graphics/" style="--text-color:var(--hty-text-color)" itemprop="url" rel="index"><span itemprop="text">Graphics</span></a></span></span><span class="post-tag"><span class="post-meta-divider">-</span><a class="tag" href="/tags/%E6%95%B0%E5%AD%A6/" style="--text-color:var(--hty-text-color)"><span class="post-meta-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-price-tag-3-line"></use></svg></span><span class="tag-name">数学</span></a></span></div></div></header><section class="post-body" itemprop="articleBody"><div class="post-content markdown-body" style="--smc-primary:#0078E7;"><h1 id="mvp-matrix">MVP Matrix</h1>
+<p>MVP 矩阵即 Model（模型）、View（观察）、Projection（投影）矩阵。</p>
+<h2 id="model">Model</h2>
+<p>模型矩阵描述的是 3D Point 的仿射变换，包含 Scale（缩放）、Rotate（旋转）、Translate（平移）。</p>
+<p>可以按照下面的方式表示： <span class="math display">\[
+M = Scale \times Rotate \times Translate
+\]</span></p>
+<blockquote>
+<ul>
+<li>最后进行 Translation 是为了保证前面的操作参考坐标轴不会变化。</li>
+<li>OpenGL 是左乘的，因此编程时计算模型矩阵需要按照 Translate、Rotate、Scale 的顺序进行。</li>
+</ul>
+</blockquote>
+<p>写的具体一点如下： <span class="math display">\[
+\begin{bmatrix}
+ \hat{x}\\
+ \hat{y}\\
+ \hat{z}\\
+ 0\\
+\end{bmatrix}=
+\begin{bmatrix}
+ a &amp; b &amp; c &amp; t_x\\
+ d &amp; e &amp; f &amp; t_y\\
+ g &amp; h &amp; i &amp; t_z\\
+ 0 &amp; 0 &amp; 0 &amp; 1
+\end{bmatrix}\times
+\begin{bmatrix}
+ x \\
+ y \\
+ z \\
+ 1 \\
+\end{bmatrix}
+\]</span> 之所以用 4 × 4 的矩阵来表示，是为了统一用矩阵乘法。如果用 3 × 3 的矩阵，会导致计算 Translate 变化时，只能用 3 × 3 的矩阵矩阵加法来表示。并且这样可以用来区分点（Point）和向量（Vector）。</p>
+<ul>
+<li>3D Point <span class="math inline">\([x,y,z,1]^T\)</span> (w = 1，Translate OK)</li>
+<li>3D Vector <span class="math inline">\([x,y,z,0]^T\)</span>(w = 0，No Translate)</li>
+<li>3D Point + 3D Point（w = 2，Middle Point）</li>
+<li>3D Point - 3D Point （w = 0，3D Vector）</li>
+<li>3D Point + 3D Vector（w = 0，3D Point）</li>
+<li>3D Vector + 3D Vector（w = 0，3D Vector）</li>
+</ul>
+<blockquote>
+<p>define <span class="math inline">\([x,y,z,w]^T(w \neq 0)\)</span> is the 3D Point <span class="math inline">\([x/w,y/w,z/w,1]^T\)</span> 。</p>
+<p>这种定义叫做齐次坐标（Homogeneous coordinates）。</p>
+</blockquote>
+<h2 id="view">View</h2>
+<p>观察矩阵用于将模型投影到摄像机（Camera）上。</p>
+<p>一般而言，定义观察矩阵（或者说摄像机状态）需要下面的一些参数：</p>
+<ul>
+<li>Position：摄像机位置 <span class="math inline">\(P = [x_p,y_p,z_p]^T\)</span></li>
+<li>Up：摄像机上方 <span class="math inline">\(U = [x_u,y_u,z_u]^T\)</span></li>
+<li>LookAt：摄像机观察方向 <span class="math inline">\(L = [x_l,y_l,z_l]^T\)</span></li>
+<li>Right：摄像机右方 <span class="math inline">\(R = L \times U = [x_r, y_r, z_r]^T\)</span></li>
+</ul>
+<p>为了推导出实际的 View 矩阵（记为 <span class="math inline">\(V\)</span>），假设初始状态如下的 View 矩阵（记为 <span class="math inline">\(V_0\)</span>）的参数如下：</p>
+<ul>
+<li><span class="math inline">\(P = [0,0,0]^T\)</span>（原点）</li>
+<li><span class="math inline">\(U = [0,1,0]^T\)</span>（正 Y 轴）</li>
+<li><span class="math inline">\(L = [0,0,-1]^T\)</span>（负 Z 轴）</li>
+<li><span class="math inline">\(R = [1,0,0]\)</span>（正 Z 轴）</li>
+</ul>
+<p>注意，对于观察者而言，我们要感受到物体进行了平移旋转之类的操作，需要对 View 矩阵（摄像机）进行相反的操作。要得到实际 View 矩阵，需要进行逆变换<span class="math inline">\(V \rightarrow V_0\)</span>，其操作具体如下：</p>
+<ul>
+<li><strong>Translate</strong>
+<ul>
+<li>P：<span class="math inline">\([x_p,y_p,z_p]^T \rightarrow [0,0,0]^T\)</span></li>
+</ul></li>
+<li><strong>Rotate</strong>：
+<ul>
+<li>U：<span class="math inline">\([x_u,y_u,z_u]^T \rightarrow [0,1,0]^T\)</span></li>
+<li>L：<span class="math inline">\([x_l,y_l,z_l]^T \rightarrow [0,0,-1]^T\)</span></li>
+<li>R：<span class="math inline">\([x_l,y_l,z_l]^T \times [x_u,y_u,z_u]^T = [x_r, y_r, z_r]^T \rightarrow [1,0,0]^T\)</span></li>
+</ul></li>
+</ul>
+<p>对于 <strong>Translate</strong>，容易得到 <span class="math display">\[
+V_T=
+\begin{bmatrix}
+ 1 &amp; 0 &amp; 0 &amp; -x_p\\
+ 0 &amp; 1 &amp; 0 &amp; -y_p\\
+ 0 &amp; 0 &amp; 1 &amp; -z_p\\
+ 0 &amp; 0 &amp; 0 &amp; 1
+\end{bmatrix}
+\]</span> 对于 <strong>Rotate</strong>，不方便直接计算，考虑逆向情况：</p>
+<ul>
+<li>R：<span class="math inline">\([x_l,y_l,z_l]^T \times [x_u,y_u,z_u]^T = [x_r, y_r, z_r]^T \rightarrow [1,0,0]^T\)</span>（X 轴方向）</li>
+<li>U：<span class="math inline">\([x_u,y_u,z_u]^T \rightarrow [0,1,0]^T\)</span>（Y 轴方向）</li>
+<li>L：<span class="math inline">\([-x_l,-y_l,-z_l]^T \rightarrow [0,0,1]^T\)</span> （Z 轴方向）</li>
+</ul>
+<p>因此有： <span class="math display">\[
+V_R^{-1}=
+\begin{bmatrix}
+ x_r &amp; x_u &amp; -x_l &amp; 0\\
+ y_r &amp; y_u &amp; -y_l &amp; 0\\
+ z_r &amp; z_u &amp; -z_l &amp; 0\\
+ 0 &amp; 0 &amp; 0 &amp; 1
+\end{bmatrix}
+\]</span> 注意到旋转矩阵在实际中会使用正交矩阵，即： <span class="math display">\[
+V_R = (V_R^{-1})^{-1} = (V_R^{-1})^{T}=
+\begin{bmatrix}
+ x_r &amp; y_r &amp; z_r &amp; 0\\
+ x_u &amp; y_u &amp; z_u &amp; 0\\
+ -x_l &amp; -y_l &amp; -z_l &amp; 0\\
+ 0 &amp; 0 &amp; 0 &amp; 1
+\end{bmatrix}
+\]</span> 因此实际的 View 矩阵为： <span class="math display">\[
+V = V_R \times V_T =
+\begin{bmatrix}
+ 1 &amp; 0 &amp; 0 &amp; -x_p\\
+ 0 &amp; 1 &amp; 0 &amp; -y_p\\
+ 0 &amp; 0 &amp; 1 &amp; -z_p\\
+ 0 &amp; 0 &amp; 0 &amp; 1
+\end{bmatrix} 
+\times
+\begin{bmatrix}
+ x_r &amp; y_r &amp; z_r &amp; 0\\
+ x_u &amp; y_u &amp; z_u &amp; 0\\
+ -x_l &amp; -y_l &amp; -z_l &amp; 0\\
+ 0 &amp; 0 &amp; 0 &amp; 1
+\end{bmatrix}
+\]</span></p>
+<h2 id="projection">Projection</h2>
+<p>Projection （投影）矩阵一般分为 Orthographic Projection（正视投影）和 Perspective Projection （透视投影）。</p>
+<p><strong>Orthographic Projection</strong></p>
+<p>之前在 Games101 上看到闫令琪老师的定义感觉很清晰：</p>
+<blockquote>
+<p>Map a cuboid <span class="math inline">\([l,r] \times [b, t] \times [f, n]\)</span> to the canonical cube <span class="math inline">\([-1, 1]^3\)</span>。</p>
+<ul>
+<li>这里的是右手系，所以远平面 f 在前面（比如 OpenGL 中的前面一般认为是负 Z 轴，f &lt; n）;</li>
+</ul>
+</blockquote>
+<p>要完成正视投影，只需要两步即可：</p>
+<ul>
+<li><strong>Translate</strong> <span class="math inline">\(Centor Point \rightarrow [0,0,0]^T\)</span></li>
+<li><strong>Scale</strong> <span class="math inline">\([2,2,2]^T\)</span></li>
+</ul>
+<p>可以很容易得到正视投影矩阵为： <span class="math display">\[
+P = P_O =
+\begin{bmatrix}
+ \frac{2}{r-l} &amp; 0 &amp; 0 &amp; 0\\
+ 0 &amp; \frac{2}{t-b} &amp; 0 &amp; 0\\
+ 0 &amp; 0 &amp; \frac{2}{n-f} &amp; 0\\
+ 0 &amp; 0 &amp; 0 &amp; 1
+\end{bmatrix}
+\times
+\begin{bmatrix}
+ 1 &amp; 0 &amp; 0 &amp; -\frac{r+l}{2}\\
+ 0 &amp; 1 &amp; 0 &amp; -\frac{t+b}{2}\\
+ 0 &amp; 0 &amp; 1 &amp; -\frac{n+f}{2}\\
+ 0 &amp; 0 &amp; 0 &amp; 1
+\end{bmatrix}
+\]</span> <strong>Perspective Projection</strong></p>
+<p>透视投影可以通过挤压远平面 f 来变成正交投影。</p>
+<p><img src="https://raw.githubusercontent.com/morisa66/BlogImgs/master/opengl/MVP/1.png" style="zoom: 50%;" / loading="lazy"></p>
+<p>并且有下面的规定：</p>
+<ul>
+<li>近平面 n 上的点经过挤压后坐标不变。</li>
+<li>远平面 f 上的中心点挤压后坐标不变。</li>
+<li>远平面 f 上的点经过挤压后 z 坐标不变（z = f）。</li>
+</ul>
+<p>对于某一点 <span class="math inline">\([x,y,z]^T\)</span>，经过变换后变为 <span class="math inline">\([x&#39;,y&#39;,z&#39;]^T\)</span>。</p>
+<p><img src="https://raw.githubusercontent.com/morisa66/BlogImgs/master/opengl/MVP/2.png" style="zoom:50%;" / loading="lazy"></p>
+<p>明显有： <span class="math display">\[
+y&#39;= \frac{n}{z}y
+\]</span> 类似有： <span class="math display">\[
+x&#39;= \frac{n}{z}x
+\]</span> 在齐次坐标中，可以写出下面的式子（3D Point，w = 1）： <span class="math display">\[
+\begin{bmatrix}
+ x\\
+ y\\
+ z\\
+ 1\\
+\end{bmatrix}
+\longrightarrow
+\begin{bmatrix}
+ \frac{n}{z}x\\
+ \frac{n}{z}y\\
+ ?\\
+ 1\\
+\end{bmatrix}
+=
+\begin{bmatrix}
+ nx\\
+ ny\\
+ ?\\
+ z\\
+\end{bmatrix}
+\]</span> 记矩阵 <span class="math inline">\(P_{P\rightarrow O}\)</span> 表示从透视矩阵转为正交矩阵的矩阵： <span class="math display">\[
+P_{P \rightarrow O} \times 
+\begin{bmatrix}
+ x\\
+ y\\
+ z\\
+ 1\\
+\end{bmatrix}
+=
+\begin{bmatrix}
+ nx\\
+ ny\\
+ ?\\
+ z\\
+\end{bmatrix}
+\]</span> 由于： <span class="math display">\[
+P_{P \rightarrow O}[1] \cdot 
+\begin{bmatrix}
+ x\\
+ y\\
+ z\\
+ 1\\
+\end{bmatrix} = nx
+\]</span> 即： <span class="math display">\[
+P_{P \rightarrow O}[1] = [n, 0, 0, 0]
+\]</span> 同理： <span class="math display">\[
+P_{P \rightarrow O}[2] = [0, n, 0, 0]
+\]</span></p>
+<p><span class="math display">\[
+P_{P \rightarrow O}[4] = [0, 0, 1, 0]
+\]</span></p>
+<p>由于任何近平面 n 上的点坐标不变，因此： <span class="math display">\[
+\begin{bmatrix}
+ x\\
+ y\\
+ n\\
+ 1\\
+\end{bmatrix}
+\longrightarrow
+\begin{bmatrix}
+ x\\
+ y\\
+ n\\
+ 1\\
+\end{bmatrix}
+=
+\begin{bmatrix}
+ nx\\
+ ny\\
+ n^2\\
+ n\\
+\end{bmatrix}
+\]</span> 即： <span class="math display">\[
+P_{P \rightarrow O}[3] \cdot 
+\begin{bmatrix}
+ x\\
+ y\\
+ n\\
+ 1\\
+\end{bmatrix} = n^2
+\]</span> 由于和 <span class="math inline">\(n^2\)</span> 与 <span class="math inline">\(x、y\)</span> 无关，因此前两项必为 0： <span class="math display">\[
+[0, 0, a, b] \cdot 
+\begin{bmatrix}
+ x\\
+ y\\
+ n\\
+ 1\\
+\end{bmatrix} = n^2
+\]</span> 化简有： <span class="math display">\[
+an + b = n^2
+\]</span> 由于任何远平面 f 上的中心点 <span class="math inline">\([0,0,f]^T\)</span> 坐标不变，因此： <span class="math display">\[
+\begin{bmatrix}
+ 0\\
+ 0\\
+ f\\
+ 1\\
+\end{bmatrix}
+\longrightarrow
+\begin{bmatrix}
+ 0\\
+ 0\\
+ f\\
+ 1\\
+\end{bmatrix}
+=
+\begin{bmatrix}
+ 0\\
+ 0\\
+ f^2\\
+ f\\
+\end{bmatrix}
+\]</span> 即： <span class="math display">\[
+[0, 0, a, b] \cdot 
+\begin{bmatrix}
+ 0\\
+ 0\\
+ f\\
+ 1\\
+\end{bmatrix} = f^2
+\]</span> 化简有： <span class="math display">\[
+af + b = f^2
+\]</span> 联立解得： <span class="math display">\[
+\left\{\begin{matrix}
+a = n + f\\
+b = -nf
+\end{matrix}\right.
+\]</span> 因此： <span class="math display">\[
+P_{P \rightarrow O} =
+\begin{bmatrix}
+ n &amp; 0 &amp; 0 &amp; 0\\
+ 0 &amp; n &amp; 0 &amp; 0\\
+ 0 &amp; 0 &amp; n + f &amp; -nf\\
+ 0 &amp; 0 &amp; 1 &amp; 0
+\end{bmatrix}
+\]</span> 最终计算出透视投影矩阵为： <span class="math display">\[
+P_P = P_O \times P_{P \rightarrow O} =
+\begin{bmatrix}
+ \frac{2}{r-l} &amp; 0 &amp; 0 &amp; 0\\
+ 0 &amp; \frac{2}{t-b} &amp; 0 &amp; 0\\
+ 0 &amp; 0 &amp; \frac{2}{n-f} &amp; 0\\
+ 0 &amp; 0 &amp; 0 &amp; 1
+\end{bmatrix}
+\times
+\begin{bmatrix}
+ 1 &amp; 0 &amp; 0 &amp; -\frac{r+l}{2}\\
+ 0 &amp; 1 &amp; 0 &amp; -\frac{t+b}{2}\\
+ 0 &amp; 0 &amp; 1 &amp; -\frac{n+f}{2}\\
+ 0 &amp; 0 &amp; 0 &amp; 1
+\end{bmatrix}
+\times
+\begin{bmatrix}
+ n &amp; 0 &amp; 0 &amp; 0\\
+ 0 &amp; n &amp; 0 &amp; 0\\
+ 0 &amp; 0 &amp; n + f &amp; -nf\\
+ 0 &amp; 0 &amp; 1 &amp; 0
+\end{bmatrix}
+\]</span></p>
+</div><div id="reward-container"><span class="hty-icon-button button-glow" id="reward-button" title="打赏" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === &quot;none&quot;) ? &quot;block&quot; : &quot;none&quot;;"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-hand-coin-line"></use></svg></span><div id="reward-comment">If it is useful, and you would like to help me, please Money🤡Money🤡Money🤡!</div><div id="qr" style="display:none;"><div style="display:inline-block"><a href="/imgs/pay/zfb.jpg"><img loading="lazy" src="/imgs/pay/zfb.jpg" alt="支付宝" title="支付宝"></a><div><span style="color:#00A3EE"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-alipay-line"></use></svg></span></div></div><div style="display:inline-block"><a href="/imgs/pay/wx.png"><img loading="lazy" src="/imgs/pay/wx.png" alt="微信支付" title="微信支付"></a><div><span style="color:#2DC100"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-wechat-pay-line"></use></svg></span></div></div></div></div><ul class="post-copyright"><li class="post-copyright-author"><strong>本文作者：</strong>morisa</li><li class="post-copyright-link"><strong>本文链接：</strong><a href="https://morisa66.github.io/2021/01/14/MVP/" title="MVP 矩阵公式推导">https://morisa66.github.io/2021/01/14/MVP/</a></li><li class="post-copyright-license"><strong>版权声明：</strong>本博客所有文章除特别声明外，均默认采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" target="_blank" rel="noopener" title="CC BY-NC-SA 4.0 "><svg class="icon"><use xlink:href="#icon-creative-commons-line"></use></svg><svg class="icon"><use xlink:href="#icon-creative-commons-by-line"></use></svg><svg class="icon"><use xlink:href="#icon-creative-commons-nc-line"></use></svg><svg class="icon"><use xlink:href="#icon-creative-commons-sa-line"></use></svg></a> 许可协议。</li></ul></section></article><div class="post-nav"><div class="post-nav-item"><a class="post-nav-prev" href="/2021/01/16/Algorithm_stock/" rel="prev" title="买卖股票的最佳时机"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-arrow-left-s-line"></use></svg><span class="post-nav-text">买卖股票的最佳时机</span></a></div><div class="post-nav-item"></div></div></div></main><footer class="sidebar-translate" id="footer"><div class="copyright"><span>&copy; 2019 – 2021 </span><span class="with-love" id="animate"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-cloud-line"></use></svg></span><span class="author"> morisa</span></div><div class="powered"><span>由 <a href="https://hexo.io" target="_blank" rel="noopener">Hexo</a> 驱动 v5.4.0</span><span class="footer-separator">|</span><span>主题 - <a rel="noopener" href="https://github.com/YunYouJun/hexo-theme-yun" target="_blank"><span>Yun</span></a> v1.5.1</span></div></footer><a class="hty-icon-button" id="goUp" aria-label="back-to-top" href="#"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-arrow-up-s-line"></use></svg><svg class="progress-circle-container" viewBox="0 0 100 100"><circle class="progress-circle" id="progressCircle" cx="50" cy="50" r="48" fill="none" stroke="#0078E7" stroke-width="2" stroke-linecap="round"></circle></svg></a></div></body></html>
