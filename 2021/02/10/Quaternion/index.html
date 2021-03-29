@@ -1,0 +1,198 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="theme-color" content="#0078E7"><meta name="author" content="morisa"><meta name="copyright" content="morisa"><meta name="generator" content="Hexo 5.4.0"><meta name="theme" content="hexo-theme-yun"><title>Quaternion and Rotation | Little Web</title><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@900&amp;display=swap" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/star-markdown-css@0.1.24/dist/yun/yun-markdown.min.css"><script src="//at.alicdn.com/t/font_1140697_ed8vp4atwoj.js" async></script><script src="https://cdn.jsdelivr.net/npm/scrollreveal/dist/scrollreveal.min.js" defer></script><script>document.addEventListener("DOMContentLoaded", () => {
+  [".post-card",".post-content img"].forEach((target)=> {
+    ScrollReveal().reveal(target);
+  })
+});
+</script><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.css"><script defer src="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.js"></script><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/katex@latest/dist/contrib/copy-tex.min.css"><script defer src="https://cdn.jsdelivr.net/npm/katex@latest/dist/contrib/copy-tex.min.js"></script><script defer src="https://cdn.jsdelivr.net/npm/katex@latest/dist/contrib/auto-render.min.js"></script><script>document.addEventListener("DOMContentLoaded", function() {
+  renderMathInElement(document.body, {
+    delimiters: [
+      {left: "$$", right: "$$", display: true},
+      {left: "$", right: "$", display: false},
+      {left: "\\(", right: "\\)", display: false},
+      {left: "\\[", right: "\\]", display: true}
+    ]
+  });
+});</script><link id="light-prism-css" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@latest/themes/prism.css" media="(prefers-color-scheme: light)"><link id="dark-prism-css" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@latest/themes/prism-tomorrow.css" media="(prefers-color-scheme: dark)"><link rel="shortcut icon" type="image/svg+xml" href="/yun.svg"><link rel="mask-icon" href="/yun.svg" color="#0078E7"><link rel="alternate icon" href="/yun.ico"><link rel="preload" href="/css/hexo-theme-yun.css" as="style"><link rel="preload" href="/js/utils.js" as="script"><link rel="preload" href="/js/hexo-theme-yun.js" as="script"><link rel="prefetch" href="/js/sidebar.js" as="script"><link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin><script id="yun-config">
+    const Yun = window.Yun || {};
+    window.CONFIG = {"hostname":"morisa66.github.io","root":"/","title":"难为君子|不做小人","version":"1.5.1","mode":"auto","copycode":true,"page":{"isPost":true},"i18n":{"placeholder":"搜索...","empty":"找不到您查询的内容: ${query}","hits":"找到 ${hits} 条结果","hits_time":"找到 ${hits} 条结果（用时 ${time} 毫秒）"},"anonymous_image":"https://cdn.jsdelivr.net/gh/YunYouJun/cdn/img/avatar/none.jpg","say":{"api":"https://v1.hitokoto.cn","hitokoto":true},"fireworks":{"colors":["102, 167, 221","62, 131, 225","33, 78, 194"]}};
+  </script><link rel="stylesheet" href="/css/hexo-theme-yun.css"><script src="/js/utils.js"></script><script src="/js/hexo-theme-yun.js"></script><meta name="description" content="A brief introduction of quaternion and rotation. reference wiki zhihu  Quaternion and Rotation Quaternion define： \[ q &#x3D; a + b\textbf{i} + c\textbf{j} + d\textbf{k}, ~~\textbf{i}^2 &#x3D;\textbf{j">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Quaternion and Rotation">
+<meta property="og:url" content="https://morisa66.github.io/2021/02/10/Quaternion/index.html">
+<meta property="og:site_name" content="Little Web">
+<meta property="og:description" content="A brief introduction of quaternion and rotation. reference wiki zhihu  Quaternion and Rotation Quaternion define： \[ q &#x3D; a + b\textbf{i} + c\textbf{j} + d\textbf{k}, ~~\textbf{i}^2 &#x3D;\textbf{j">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://raw.githubusercontent.com/morisa66/BlogImgs/master/opengl/Quaternion/Rotation120.png">
+<meta property="article:published_time" content="2021-02-10T11:19:48.000Z">
+<meta property="article:modified_time" content="2021-02-11T08:54:24.000Z">
+<meta property="article:author" content="morisa">
+<meta property="article:tag" content="数学">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/morisa66/BlogImgs/master/opengl/Quaternion/Rotation120.png"><script src="/js/ui/mode.js"></script></head><body><script defer src="https://cdn.jsdelivr.net/npm/animejs@latest"></script><script defer src="/js/ui/fireworks.js"></script><canvas class="fireworks"></canvas><div class="container"><a class="sidebar-toggle hty-icon-button" id="menu-btn"><div class="hamburger hamburger--spin" type="button"><span class="hamburger-box"><span class="hamburger-inner"></span></span></div></a><div class="sidebar-toggle sidebar-overlay"></div><aside class="sidebar"><script src="/js/sidebar.js"></script><ul class="sidebar-nav"><li class="sidebar-nav-item sidebar-nav-toc hty-icon-button sidebar-nav-active" data-target="post-toc-wrap" title="文章目录"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-list-ordered"></use></svg></li><li class="sidebar-nav-item sidebar-nav-overview hty-icon-button" data-target="site-overview-wrap" title="站点概览"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-passport-line"></use></svg></li></ul><div class="sidebar-panel" id="site-overview-wrap"><div class="site-info fix-top"><a class="site-author-avatar" href="/about/" title="morisa"><img width="96" loading="lazy" src="/imgs/avatar.jpg" alt="morisa"></a><div class="site-author-name"><a href="/about/">morisa</a></div><a class="site-name" href="/about/site.html">Little Web</a><sub class="site-subtitle"></sub><div class="site-desciption"></div></div><nav class="site-state"><a class="site-state-item hty-icon-button icon-home" href="/" title="首页"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-home-4-line"></use></svg></span></a><div class="site-state-item"><a href="/archives/" title="归档"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-archive-line"></use></svg></span><span class="site-state-item-count">29</span></a></div><div class="site-state-item"><a href="/categories/" title="分类"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-folder-2-line"></use></svg></span><span class="site-state-item-count">4</span></a></div><div class="site-state-item"><a href="/tags/" title="标签"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-price-tag-3-line"></use></svg></span><span class="site-state-item-count">15</span></a></div><a class="site-state-item hty-icon-button" target="_blank" rel="noopener" href="https://yun.yunyoujun.cn" title="文档"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-settings-line"></use></svg></span></a></nav><hr style="margin-bottom:0.5rem"><div class="links-of-author"><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://github.com/morisa66" title="GitHub" target="_blank" style="color:#6e5494"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-github-line"></use></svg></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://www.zhihu.com/people/morisa-48" title="知乎" target="_blank" style="color:#0084FF"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-zhihu-line"></use></svg></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://space.bilibili.com/289542802" title="B站" target="_blank" style="color:#FF8EB3"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-bilibili-line"></use></svg></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://twitter.com/morisa66" title="Twitter" target="_blank" style="color:#1da1f2"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-twitter-line"></use></svg></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="morisa66@outlook.com" title="E-Mail" target="_blank" style="color:#8E71C1"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-mail-line"></use></svg></a></div><br><a class="links-item hty-icon-button" id="toggle-mode-btn" href="javascript:;" title="Mode" style="color: #f1cb64"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-contrast-2-line"></use></svg></a></div><div class="sidebar-panel sidebar-panel-active" id="post-toc-wrap"><div class="post-toc"><div class="post-toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#quaternion-and-rotation"><span class="toc-number">1.</span> <span class="toc-text">Quaternion and Rotation</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#quaternion"><span class="toc-number">1.1.</span> <span class="toc-text">Quaternion</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#rotation"><span class="toc-number">1.2.</span> <span class="toc-text">Rotation</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#example"><span class="toc-number">1.3.</span> <span class="toc-text">Example</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#rotation-proof"><span class="toc-number">1.4.</span> <span class="toc-text">Rotation Proof</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#quaternion-rotation-proof"><span class="toc-number">1.5.</span> <span class="toc-text">Quaternion Rotation Proof</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#quaternion-rotation-matrix"><span class="toc-number">1.6.</span> <span class="toc-text">Quaternion Rotation Matrix</span></a></li></ol></li></ol></div></div></div></aside><main class="sidebar-translate" id="content"><div id="post"><article class="hty-card post-block" itemscope itemtype="https://schema.org/Article"><link itemprop="mainEntityOfPage" href="https://morisa66.github.io/2021/02/10/Quaternion/"><span hidden itemprop="author" itemscope itemtype="https://schema.org/Person"><meta itemprop="name" content="morisa"><meta itemprop="description"></span><span hidden itemprop="publisher" itemscope itemtype="https://schema.org/Organization"><meta itemprop="name" content="Little Web"></span><header class="post-header"><h1 class="post-title" itemprop="name headline">Quaternion and Rotation</h1><div class="post-meta"><div class="post-time" style="display:inline-block"><span class="post-meta-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-calendar-line"></use></svg></span> <time title="创建时间：2021-02-10 19:19:48" itemprop="dateCreated datePublished" datetime="2021-02-10T19:19:48+08:00">2021-02-10</time><span class="post-meta-divider">-</span><span class="post-meta-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-calendar-2-line"></use></svg></span> <time title="修改时间：2021-02-11 16:54:24" itemprop="dateModified" datetime="2021-02-11T16:54:24+08:00">2021-02-11</time></div><div class="post-classify"><span class="post-category"> <span class="post-meta-item-icon" style="margin-right:3px;"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-folder-line"></use></svg></span><span itemprop="about" itemscope itemtype="https://schema.org/Thing"><a class="category" href="/categories/Graphics/" style="--text-color:var(--hty-text-color)" itemprop="url" rel="index"><span itemprop="text">Graphics</span></a></span></span><span class="post-tag"><span class="post-meta-divider">-</span><a class="tag" href="/tags/%E6%95%B0%E5%AD%A6/" style="--text-color:var(--hty-text-color)"><span class="post-meta-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-price-tag-3-line"></use></svg></span><span class="tag-name">数学</span></a></span></div></div></header><section class="post-body" itemprop="articleBody"><div class="post-content markdown-body" style="--smc-primary:#0078E7;"><ul>
+<li>A brief introduction of quaternion and rotation.</li>
+<li>reference <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Quaternions_and_spatial_rotation">wiki</a> <a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/78987582">zhihu</a></li>
+</ul>
+<h1 id="quaternion-and-rotation">Quaternion and Rotation</h1>
+<h2 id="quaternion">Quaternion</h2>
+<p><strong>define</strong>： <span class="math display">\[
+q = a + b\textbf{i} + c\textbf{j} + d\textbf{k},
+~~\textbf{i}^2 =\textbf{j}^2 = \textbf{k}^2 = \textbf{i}\textbf{j}\textbf{k} = -1
+\]</span> <span class="math inline">\(\textbf{i},\textbf{j},\textbf{k}\)</span> are perpendicular to each other： <span class="math display">\[
+\textbf{i} \perp \textbf{j} \perp \textbf{k}
+\]</span> a is perpendicular the 3D space <span class="math inline">\(\textbf{i}-\textbf{j}-\textbf{k}\)</span>： <span class="math display">\[
+a\perp \textbf{i},~~a\perp \textbf{j},~~a\perp \textbf{k}
+\]</span> let： <span class="math display">\[
+\vec{v} = b\textbf{i} + c\textbf{j} + d\textbf{k}
+\]</span> so： <span class="math display">\[
+q = a + \vec{v}
+\]</span> <strong>define：</strong> <span class="math display">\[
+unit~~quaternion = \frac{q}{||q||}
+\]</span></p>
+<p><span class="math display">\[
+q q^{-1} = q^{-1} q = 1(unit~~quaternions)
+\]</span> so： <span class="math display">\[
+q^{-1} = (a + \vec{v})^{-1} = \frac{(a + \vec{v})^*}{||a+\vec{v}||^2} = 
+\frac{a - \vec{v}}{a^2+||\vec{v}||^2}
+\]</span></p>
+<p>for each <span class="math inline">\(q_1 = a_1 + \vec{v_1},q_2 = a_2 + \vec{v_2}\)</span></p>
+<p>addition： <span class="math display">\[
+q_1 + q_2 = (a_1 + a_2) + (\vec{v_1} + \vec{v_2})
+\]</span> multiplication： <span class="math display">\[
+q_1 q_2 = (a_1 a_2 - \vec{v_1} \cdot \vec{v_2}) 
++ (a_1 \vec{v_2} + a_2 \vec{v_1} + \vec{v_1} \times \vec{v_2})
+\]</span></p>
+<h2 id="rotation">Rotation</h2>
+<p>A rotation of <span class="math inline">\(\theta\)</span> around the axis <span class="math inline">\(\vec{u}\)</span>： <span class="math display">\[
+\vec{u} = (u_x, u_y, u_z) = u_x\textbf{i} + u_y\textbf{j} + u_z\textbf{k}
+\]</span> It can be represented by a quaternion <span class="math inline">\(q\)</span>：(an extension of Euler's formula.) <span class="math display">\[
+q = e^{\frac{\theta}{2}(u_x\textbf{i} + u_y\textbf{j} + u_z\textbf{k})}
+= cos(\frac{\theta}{2}) + (u_x\textbf{i} + u_y\textbf{j} + u_z\textbf{k}) \
+sin(\frac{\theta}{2})
+\]</span> Given <span class="math inline">\(p\)</span> in 3D ：(The real part is zero.) <span class="math display">\[
+\vec{u} = (u_x, u_y, u_z) = 0 + u_x\textbf{i} + u_y\textbf{j} + u_z\textbf{k}
+\]</span> We can get <span class="math inline">\(\hat{p}\)</span>： <span class="math display">\[
+\hat{p} = q p q^{-1}
+\]</span> there： <span class="math display">\[
+q^{-1} = e^{-\frac{\theta}{2}(u_x\textbf{i} + u_y\textbf{j} + u_z\textbf{k})}
+= cos(\frac{\theta}{2}) - (u_x\textbf{i} + u_y\textbf{j} + u_z\textbf{k}) \
+sin(\frac{\theta}{2})
+\]</span></p>
+<p><strong>You can find proof below.</strong></p>
+<h2 id="example">Example</h2>
+<p>Define the rotation function <span class="math inline">\(f_r\)</span> around the axis <span class="math inline">\(\vec{v} = \textbf{i} + \textbf{j} + \textbf{k}\)</span>，and the <span class="math inline">\(\theta = 120^{\circ}\)</span>.</p>
+<p><img src="https://raw.githubusercontent.com/morisa66/BlogImgs/master/opengl/Quaternion/Rotation120.png" style="zoom:50%;" / loading="lazy"></p>
+<p>Calculate <span class="math inline">\(q\)</span>：(normalize <span class="math inline">\(\vec{v}\)</span>) <span class="math display">\[
+q = cos(\frac{\theta}{2}) + \frac{\vec{v}}{||\vec{v}||}sin(\frac{\theta}{2})
+= \frac{1 + \textbf{i} + \textbf{j} + \textbf{k}}{2}
+\]</span> So the <span class="math inline">\(f_r\)</span> is： <span class="math display">\[
+f_r(a\textbf{i} + b\textbf{j} + c\textbf{k})=q(a\textbf{i}+b\textbf{j}+c\textbf{k})q^{-1}
+\]</span> there： <span class="math display">\[
+q^{-1} = \frac{1 - \textbf{i} - \textbf{j} - \textbf{k}}{2}
+\]</span> So the actual <span class="math inline">\(f_r\)</span> is： <span class="math display">\[
+f_r(a\textbf{i} + b\textbf{j} + c\textbf{k}) =
+\frac{1 + \textbf{i} + \textbf{j} + \textbf{k}}{2}
+(a\textbf{i} + b\textbf{j} + c\textbf{k})
+\frac{1 - \textbf{i} - \textbf{j} - \textbf{k}}{2}
+\]</span></p>
+<h2 id="rotation-proof">Rotation Proof</h2>
+<p>Let <span class="math inline">\(\vec{p}\)</span> around the rotation axis <span class="math inline">\(\vec{A}\)</span> ratate <span class="math inline">\(\theta\)</span>，there： <span class="math display">\[
+||\vec{A}|| = 1
+\]</span> So the projection of <span class="math inline">\(\vec{p}\)</span> on <span class="math inline">\(A\)</span> is： <span class="math display">\[
+p_{A} = cos&lt;\vec{p},\vec{A}&gt; ||\vec{p}|| \vec{A} = \frac{\vec{A} \cdot \vec{p}}{||\vec{p}||}||\vec{p}|| \vec{A} = \vec{A} \vec{p} \vec{A}
+\]</span> The vertical direction vector is： <span class="math display">\[
+p_{\perp A} = \vec{p} - \vec{A} \vec{p} \vec{A}
+\]</span> After rotation，<span class="math inline">\(p_{A}\)</span> don't change.</p>
+<p>We can get <span class="math inline">\(\hat{p}\)</span> by the linear combination of <span class="math inline">\(p_{\perp A}\)</span> and <span class="math inline">\(\vec{A} \times \vec{p}\)</span>.</p>
+<p><span class="math inline">\(p_{\perp A}\)</span> rotate around the axis <span class="math inline">\(A\)</span> with the degree of <span class="math inline">\(\theta\)</span>. <span class="math display">\[
+p_{\perp A}&#39; = p_{\perp A} cos(\theta) + (\vec{A} \times \vec{p}) sin(\theta)
+\]</span> So the <span class="math inline">\(\vec{p}&#39;\)</span> is： <span class="math display">\[
+\vec{p}&#39; = p_{A} + p_{\perp A}&#39; = \vec{A} \vec{p} \vec{A}
++(\vec{p} - \vec{A} \vec{p} \vec{A})cos(\theta) + (\vec{A} \times \vec{p})sin(\theta)
+\]</span></p>
+<p><span class="math display">\[
+\vec{p}&#39; = \vec{p}cos(\theta) + (\vec{A} \times \vec{p})sin(\theta) + 
+(\vec{A} \vec{p} \vec{A})(1 - cos(\theta))
+\]</span></p>
+<h2 id="quaternion-rotation-proof">Quaternion Rotation Proof</h2>
+<p>Let <span class="math inline">\(q = a + \vec{v}\)</span> is a unit quaternion，so： <span class="math display">\[
+q^{-1} = \frac{a - \vec{v}}{||q||} = a - \vec{v}
+\]</span> We can prove : <span class="math display">\[
+\hat{p} = q p q^{-1} = (a + \vec{v}) p (a - \vec{v}) = (a + \vec{v})(0 + \vec{p})
+(a - \vec{v})\\
+=(-\vec{v} \cdot \vec{p} + a\vec{p} + \vec{v} \times \vec{p})(a - \vec{v})
+\\
+=a^2\vec{p} + 2a(\vec{v} \times \vec{p}) + (\vec{v} \cdot \vec{p})\vec{v} 
+- \vec{v} \times \vec{p} \times \vec{v}
+\]</span> Because <span class="math inline">\(\vec{v} \times \vec{p}\)</span> is perpendicular to <span class="math inline">\(\vec{v}\)</span> ： <span class="math display">\[
+\vec{v} \times \vec{p} \cdot \vec{v} = 0
+\]</span> and： <span class="math display">\[
+-a (\vec{p} \times \vec{v}) = a(\vec{v} \times \vec{p})
+\]</span></p>
+<blockquote>
+<p>Theory：For each <span class="math inline">\(\vec{p},\vec{q} \in R^3\)</span>： <span class="math display">\[
+\vec{p} \times \vec{q} \times \vec{p} = \vec{p} \times (\vec{q} \times \vec{p})
+= \vec{p}^2\vec{q} - (\vec{p} \cdot \vec{q})p
+\]</span></p>
+</blockquote>
+<p>By this theory： <span class="math display">\[
+- \vec{v} \times \vec{p} \times \vec{v} = (\vec{v} \cdot \vec{p})v - \vec{v}^2\vec{p}
+\]</span> so： <span class="math display">\[
+\hat{p} =
+(a^2 - \vec{v}^2)p + 2a(\vec{v} \times \vec{p}) + 2(\vec{v} \times \vec{p})\vec{v}
+\]</span> Let <span class="math inline">\(\vec{v} = t \vec{e},~~||\vec{e}|| = 1\)</span>，then： <span class="math display">\[
+\hat{p} = (a^2 - t^2)\vec{p} + 2at(\vec{e} \times \vec{p}) 
++ 2t^2(\vec{e} \cdot \vec{p})\vec{e}
+\]</span> compare with： <span class="math display">\[
+\vec{p}&#39; = \vec{p}cos(\theta) + (\vec{A} \times \vec{p})sin(\theta) + 
+(\vec{A} \vec{p} \vec{A})(1 - cos(\theta))
+\]</span> We can get： <span class="math display">\[
+\left\{\begin{matrix}
+a^2 - t^2 = cos(\theta)\\
+2at = sin(\theta)\\
+2t^2 = 1 - cos(\theta)
+\end{matrix}\right.
+\]</span> Solve the equation group： <span class="math display">\[
+\left\{\begin{matrix}
+t = \sqrt{\frac{1 - cos(\theta)}{2}} = sin(\frac{\theta}{2})\\
+a = cos(\frac{\theta}{2})
+\end{matrix}\right.
+\]</span> so： <span class="math display">\[
+q = a+\vec{v} = cos(\frac{\theta}{2}) + \frac{\vec{v}}{||\vec{v}||}sin(\frac{\theta}{2})
+\]</span> We can use <span class="math inline">\(q_1 q_2 \cdots q_n\)</span> represent a series of rotation.</p>
+<h2 id="quaternion-rotation-matrix">Quaternion Rotation Matrix</h2>
+<p>The rotation <span class="math inline">\(\hat{p} = q p q^{-1}, q = a + t\vec{e}\)</span> can be represented by a matrix <span class="math inline">\(\hat{p} = Rp\)</span>： <span class="math display">\[
+qpq^-1 = 
+(\begin{bmatrix}
+a^2 - t^2  &amp; 0 &amp; 0 \\
+0 &amp; a^2 - t^2 &amp;  0 \\
+0 &amp; 0 &amp; a^2 - t^2 \\ 
+\end{bmatrix}+
+\begin{bmatrix}
+0 &amp; -2at\vec{e}_z &amp; 2at\vec{e}_y \\
+2at\vec{e}_z &amp; 0 &amp; -2at\vec{e}_x \\
+-2at\vec{e}_y &amp; 2at\vec{e}_x &amp; 0 \\ 
+\end{bmatrix}+
+\begin{bmatrix}
+2t^2\vec{e}_x^2 &amp; 2t^2\vec{e}_x\vec{e}_y &amp; 2t^2\vec{e}_x\vec{e}_z \\
+2t^2\vec{e}_x\vec{e}_y &amp; 2t^2\vec{e}_y^2 &amp; 2t^2\vec{e}_y\vec{e}_z \\
+2t^2\vec{e}_x\vec{e}_y &amp; 2t^2\vec{e}_y\vec{e}_z &amp; 2t^2\vec{e}_z^2 \\ 
+\end{bmatrix})p
+\]</span> let ： <span class="math display">\[
+q = (w, x, y, z)
+\]</span> so： <span class="math display">\[
+\left\{\begin{matrix}
+w = a\\
+x = t\vec{e}_x\\
+y = t\vec{e}_y\\
+z = t\vec{e}_z\\\end{matrix}\right.
+\]</span> then： <span class="math display">\[
+x^2 + y^2 + z^2 = t^2 \vec{e}^2 = t^2
+\]</span> Bring in and simplify： <span class="math display">\[
+R =
+\begin{bmatrix}
+1 - 2y^2 - 2z^2 &amp; 2xy - 2wz &amp; 2xz + 2wy \\
+2xy + 2wz &amp; 1 - 2x^2 - 2z^2 &amp; 2yz - 2wx \\
+2xz - 2wy &amp; 2yz + 2wx &amp; 1 - 2x^2 - 2y^2
+\end{bmatrix}
+\]</span></p>
+</div><div id="reward-container"><span class="hty-icon-button button-glow" id="reward-button" title="打赏" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === &quot;none&quot;) ? &quot;block&quot; : &quot;none&quot;;"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-hand-coin-line"></use></svg></span><div id="reward-comment">If it is useful, and you would like to help me, please Money🤡Money🤡Money🤡!</div><div id="qr" style="display:none;"><div style="display:inline-block"><a href="/imgs/pay/zfb.jpg"><img loading="lazy" src="/imgs/pay/zfb.jpg" alt="支付宝" title="支付宝"></a><div><span style="color:#00A3EE"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-alipay-line"></use></svg></span></div></div><div style="display:inline-block"><a href="/imgs/pay/wx.png"><img loading="lazy" src="/imgs/pay/wx.png" alt="微信支付" title="微信支付"></a><div><span style="color:#2DC100"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-wechat-pay-line"></use></svg></span></div></div></div></div><ul class="post-copyright"><li class="post-copyright-author"><strong>本文作者：</strong>morisa</li><li class="post-copyright-link"><strong>本文链接：</strong><a href="https://morisa66.github.io/2021/02/10/Quaternion/" title="Quaternion and Rotation">https://morisa66.github.io/2021/02/10/Quaternion/</a></li><li class="post-copyright-license"><strong>版权声明：</strong>本博客所有文章除特别声明外，均默认采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" target="_blank" rel="noopener" title="CC BY-NC-SA 4.0 "><svg class="icon"><use xlink:href="#icon-creative-commons-line"></use></svg><svg class="icon"><use xlink:href="#icon-creative-commons-by-line"></use></svg><svg class="icon"><use xlink:href="#icon-creative-commons-nc-line"></use></svg><svg class="icon"><use xlink:href="#icon-creative-commons-sa-line"></use></svg></a> 许可协议。</li></ul></section></article><div class="post-nav"><div class="post-nav-item"><a class="post-nav-prev" href="/2021/02/12/Concurrency/" rel="prev" title="并发Concurrency"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-arrow-left-s-line"></use></svg><span class="post-nav-text">并发Concurrency</span></a></div><div class="post-nav-item"><a class="post-nav-next" href="/2021/02/02/FastMod/" rel="next" title="快速幂"><span class="post-nav-text">快速幂</span><svg class="icon" aria-hidden="true"><use xlink:href="#icon-arrow-right-s-line"></use></svg></a></div></div></div></main><footer class="sidebar-translate" id="footer"><div class="copyright"><span>&copy; 2019 – 2021 </span><span class="with-love" id="animate"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-cloud-line"></use></svg></span><span class="author"> morisa</span></div><div class="powered"><span>由 <a href="https://hexo.io" target="_blank" rel="noopener">Hexo</a> 驱动 v5.4.0</span><span class="footer-separator">|</span><span>主题 - <a rel="noopener" href="https://github.com/YunYouJun/hexo-theme-yun" target="_blank"><span>Yun</span></a> v1.5.1</span></div></footer><a class="hty-icon-button" id="goUp" aria-label="back-to-top" href="#"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-arrow-up-s-line"></use></svg><svg class="progress-circle-container" viewBox="0 0 100 100"><circle class="progress-circle" id="progressCircle" cx="50" cy="50" r="48" fill="none" stroke="#0078E7" stroke-width="2" stroke-linecap="round"></circle></svg></a></div></body></html>
