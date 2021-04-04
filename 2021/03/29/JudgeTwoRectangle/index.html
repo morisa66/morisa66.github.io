@@ -6,12 +6,12 @@
 </script><link id="light-prism-css" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@latest/themes/prism.css" media="(prefers-color-scheme: light)"><link id="dark-prism-css" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@latest/themes/prism-tomorrow.css" media="(prefers-color-scheme: dark)"><link rel="shortcut icon" type="image/svg+xml" href="/yun.svg"><link rel="mask-icon" href="/yun.svg" color="#0078E7"><link rel="alternate icon" href="/yun.ico"><link rel="preload" href="/css/hexo-theme-yun.css" as="style"><link rel="preload" href="/js/utils.js" as="script"><link rel="preload" href="/js/hexo-theme-yun.js" as="script"><link rel="prefetch" href="/js/sidebar.js" as="script"><link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin><script id="yun-config">
     const Yun = window.Yun || {};
     window.CONFIG = {"hostname":"morisa66.github.io","root":"/","title":"难为君子|不做小人","version":"1.5.1","mode":"auto","copycode":true,"page":{"isPost":true},"i18n":{"placeholder":"搜索...","empty":"找不到您查询的内容: ${query}","hits":"找到 ${hits} 条结果","hits_time":"找到 ${hits} 条结果（用时 ${time} 毫秒）"},"anonymous_image":"https://cdn.jsdelivr.net/gh/YunYouJun/cdn/img/avatar/none.jpg","say":{"api":"https://v1.hitokoto.cn","hitokoto":true},"fireworks":{"colors":["102, 167, 221","62, 131, 225","33, 78, 194"]}};
-  </script><link rel="stylesheet" href="/css/hexo-theme-yun.css"><script src="/js/utils.js"></script><script src="/js/hexo-theme-yun.js"></script><meta name="description" content="判断两个四边形是否相交 如果是矩形，这个问题很简单，但这里是一般的凸多边形。 我的思路是利用矩阵叉乘判断是存在某个四边形的顶点在另一个四边形的里面来判断是否相交的。 在边上的情况我定义为相交，如下图：  当两个四边形相交时，其中一个四边形必然至少有一个顶点在另一个四边形的内部。令： 四边形A： \[ A1(x_{a1},y_{a1})~~A2(x_{a2},y_{a2})~~A3(x">
+  </script><link rel="stylesheet" href="/css/hexo-theme-yun.css"><script src="/js/utils.js"></script><script src="/js/hexo-theme-yun.js"></script><meta name="description" content="判断两个四边形是否相交 如果是矩形，这个问题很简单，但这里是一般的凸多边形。 我的思路是利用矩阵叉乘判断是存在某个四边形的顶点在另一个四边形的里面来判断是否相交的。 在边上的情况我定义为相交，如下图：  很容易证明：当两个四边形相交时，其中一个四边形必然至少有一个顶点在另一个四边形的内部。  对于凸多边形\(A:A_1A_2\cdots A_n\)和点\(P\)，若\(P\)在多边形">
 <meta property="og:type" content="article">
 <meta property="og:title" content="判断两个四边形是否相交">
 <meta property="og:url" content="https://morisa66.github.io/2021/03/29/JudgeTwoRectangle/index.html">
 <meta property="og:site_name" content="Little Web">
-<meta property="og:description" content="判断两个四边形是否相交 如果是矩形，这个问题很简单，但这里是一般的凸多边形。 我的思路是利用矩阵叉乘判断是存在某个四边形的顶点在另一个四边形的里面来判断是否相交的。 在边上的情况我定义为相交，如下图：  当两个四边形相交时，其中一个四边形必然至少有一个顶点在另一个四边形的内部。令： 四边形A： \[ A1(x_{a1},y_{a1})~~A2(x_{a2},y_{a2})~~A3(x">
+<meta property="og:description" content="判断两个四边形是否相交 如果是矩形，这个问题很简单，但这里是一般的凸多边形。 我的思路是利用矩阵叉乘判断是存在某个四边形的顶点在另一个四边形的里面来判断是否相交的。 在边上的情况我定义为相交，如下图：  很容易证明：当两个四边形相交时，其中一个四边形必然至少有一个顶点在另一个四边形的内部。  对于凸多边形\(A:A_1A_2\cdots A_n\)和点\(P\)，若\(P\)在多边形">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://raw.githubusercontent.com/morisa66/BlogImgs/master/opengl/JudgeTwoRectangle/1.png">
 <meta property="article:published_time" content="2021-03-29T08:51:44.000Z">
@@ -25,19 +25,14 @@
 <p>我的思路是利用矩阵叉乘判断是存在某个四边形的顶点在另一个四边形的里面来判断是否相交的。</p>
 <p>在边上的情况我定义为相交，如下图：</p>
 <p><img src="https://raw.githubusercontent.com/morisa66/BlogImgs/master/opengl/JudgeTwoRectangle/1.png" / loading="lazy"></p>
-<p>当两个四边形相交时，其中一个四边形必然至少有一个顶点在另一个四边形的内部。令：</p>
-<p>四边形A： <span class="math display">\[
-A1(x_{a1},y_{a1})~~A2(x_{a2},y_{a2})~~A3(x_{a3},y_{a3})~~A4(x_{a4},y_{a4})
-\]</span> 四边形B： <span class="math display">\[
-B1(x_{b1},y_{b1})~~B2(x_{b2},y_{b2})~~B3(x_{b3},y_{b3})~~B4(x_{b4},y_{b4})
-\]</span></p>
+<p>很容易证明：<strong>当两个四边形相交时，其中一个四边形必然至少有一个顶点在另一个四边形的内部。</strong></p>
 <blockquote>
-<p>对于凸多边形<span class="math inline">\(A:A_1A_2\cdots A_n\)</span>和点<span class="math inline">\(P\)</span>，若<span class="math inline">\(P\)</span>在多边形每一条边<span class="math inline">\(A_1A_2\cdots A_nA_1\)</span>的同一边，即下面的表达式同号。 <span class="math display">\[
+<p>对于凸多边形<span class="math inline">\(A:A_1A_2\cdots A_n\)</span>和点<span class="math inline">\(P\)</span>，若<span class="math inline">\(P\)</span>在多边形每一条边<span class="math inline">\(A_1A_2\cdots A_nA_1\)</span>的同一边，即下面的表达式同号,则可以证明<span class="math inline">\(P\)</span>在<span class="math inline">\(A\)</span>的内部。 <span class="math display">\[
 \vec{PA_1} \times \vec{PA_2} \\ 
 \vec{PA_2} \times \vec{PA_3} \\
 ...   \\
 \vec{PA_n} \times \vec{PA_1}
-\]</span> 则可以证明<span class="math inline">\(P\)</span>在<span class="math inline">\(A\)</span>的内部。</p>
+\]</span></p>
 </blockquote>
 <p>算法实现：</p>
 <ul>
